@@ -1,55 +1,42 @@
-import {
-    signInWithPopup,
-    GoogleAuthProvider,
-    GithubAuthProvider,
-  } from "firebase/auth";
-import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
-const navigate = useNavigate();
+  const { loginGoogle, loginGithub, user } = useAuth();
+  const navigate = useNavigate();
 
-const handleGoogleSignIn = async () => {
-    try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-    console.log("Google sign‑in success");
-    navigate("/game");
-    } catch (error) {
-    console.error("Google sign‑in error", error);
-    }
-};
+  // When a user is already logged‑in (e.g. page refresh) → skip login screen
+  if (user) {
+    navigate("/game", { replace: true });
+    return null;
+  }
 
-const handleGithubSignIn = async () => {
-    try {
-    await signInWithPopup(auth, new GithubAuthProvider());
-    console.log("GitHub sign‑in success");
-    navigate("/game");
-    } catch (error) {
-    console.error("GitHub sign‑in error", error);
-    }
-};
-
-return (
+  return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-    <img
+      <img
         src="/titlescreen.png"
         alt="TriviaDual Title"
         className="w-11/12 max-w-lg mb-8"
-    />
-    <div className="flex gap-4">
+      />
+      <div className="flex gap-4">
         <button
-        className="px-6 py-3 rounded-md shadow-md bg-blue-600 text-white hover:bg-blue-700 transition"
-        onClick={handleGoogleSignIn}
+          className="px-6 py-3 rounded-md shadow-md bg-blue-600 text-white hover:bg-blue-700 transition"
+          onClick={() =>
+            loginGoogle().then(() => navigate("/game")).catch(console.error)
+          }
         >
-        Sign in with Google
+          Sign in with Google
         </button>
+
         <button
-        className="px-6 py-3 rounded-md shadow-md bg-gray-800 text-white hover:bg-gray-900 transition"
-        onClick={handleGithubSignIn}
+          className="px-6 py-3 rounded-md shadow-md bg-gray-800 text-white hover:bg-gray-900 transition"
+          onClick={() =>
+            loginGithub().then(() => navigate("/game")).catch(console.error)
+          }
         >
-        Sign in with GitHub
+          Sign in with GitHub
         </button>
+      </div>
     </div>
-    </div>
-);
+  );
 }
