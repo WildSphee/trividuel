@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from fastapi import WebSocket
 
@@ -17,11 +17,11 @@ class Player:
         self.websocket = ws
         self.elo = elo
         self.recent_opponents: List[str] = recent or []
-        self.state: str = "queueing"  # queueing | playing | idle
+        self.state: Literal["queueing", "playing", "idle"] = "queueing"
         self.session_id: Optional[str] = None
 
     def __repr__(self):
-        return f"<Player {self.uid} elo={self.elo}>"
+        return f"Player:{self.uid}\n elo:{self.elo}"
 
 
 class PlayerManager:

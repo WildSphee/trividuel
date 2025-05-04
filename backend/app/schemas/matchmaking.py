@@ -32,8 +32,7 @@ class MatchmakingQueue:
             for idx in range(1, len(self._queue)):
                 p1 = self._queue[0]
                 p2 = self._queue[idx]
-                if p2.uid in p1.recent_opponents or p1.uid in p2.recent_opponents:
-                    continue
+                # matchmaking conditions here: TODO
                 # found a pair
                 self._queue.pop(idx)
                 self._queue.pop(0)

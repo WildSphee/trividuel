@@ -6,4 +6,4 @@ __pycache__
 venv
 
 # firebase creds
-*/config/*.json
+firebase_config.json

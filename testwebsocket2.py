@@ -3,11 +3,11 @@ import websockets
 import json
 
 async def test_websocket():
-    url = "ws://localhost:5678/play?token=1234567890"
+    url = "ws://localhost:5678/play?token=0987654321"
 
     try:
         async with websockets.connect(url) as websocket:
-            print("Connected to WebSocket - player1")
+            print("Connected to WebSocket - player2")
 
             while True:
                 reply = await websocket.recv()

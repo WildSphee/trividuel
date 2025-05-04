@@ -2,8 +2,10 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from app.schemas.players import Player
 from google.cloud.firestore_v1 import AsyncClient
+
+from app.schemas.players import Player
+
 
 class GameSession:
     """Represents a live 1‑vs‑1 game session."""
@@ -17,13 +19,14 @@ class GameSession:
             p.state = "playing"
             p.session_id = self.id
 
-    async def broadcast(self, payload: dict):
-        for p in self.players:
-            if p.websocket.client_state.name == "CONNECTED":
-                await p.websocket.send_json(payload)
-
     async def start(self):
-        await self.broadcast({"type": "game_start", "session_id": self.id})
+        for p in self.players:
+            payload = {
+                "type": "game_start",
+                "session_id": self.id,
+                "players": str(self.players),
+            }
+            await p.websocket.send_json(payload)
 
     async def handle_disconnect(self, leaver_uid: str):
         """Called when a player disconnects (voluntarily or network)."""
@@ -31,7 +34,11 @@ class GameSession:
         if remaining:
             winner = remaining[0]
             await winner.websocket.send_json(
-                {"type": "you_win", "reason": "opponent_left"}
+                {
+                    "type": "match_win",
+                    "reason": "opponent_left",
+                    "extra": {"opponent": leaver_uid},
+                }
             )
         # Clean player states
         for p in self.players:
@@ -61,13 +68,7 @@ class GameSession:
             doc_ref = self.db.collection("players").document(p.uid)
             batch.set(
                 doc_ref,
-                {
-                    "elo": p.elo,
-                    "updated": datetime.utcnow,
-                    "recent": self.db.field_path("recent").array_union(
-                        [op.uid for op in self.players if op.uid != p.uid]
-                    ),
-                },
+                {"elo": p.elo, "updated": datetime.now()},
                 merge=True,
             )
         await batch.commit()
