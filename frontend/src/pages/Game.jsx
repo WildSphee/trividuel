@@ -1,39 +1,51 @@
-import { useState } from "react";
-import { sendMessage, socket } from "../api/socket";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/api/player";
+import Loader from "../components/Loader";
+import UserCard from "@/components/UserCard";
+import useMatchmaking from "@/hooks/useMatchmaking";
+import { useNavigate } from "react-router-dom";
 
 export default function Game() {
-  const [characterName, setCharacterName] = useState("");
-  const [log, setLog] = useState([]);
+  const navigate = useNavigate();
 
-  // basic echo listener
-  socket.onmessage = (e) => setLog((prev) => [...prev, e.data]);
+  // Load player profile
+  const { data: me, isLoading } = useQuery({ queryKey: ["me"], queryFn: getMe });
+
+  // Hook that handles WebSocket + status
+  const { status, queue } = useMatchmaking(
+    (gameStart) => {
+      console.log("Game started:", gameStart);
+      // future: navigate to /battle/<session_id>
+    },
+    () => navigate("/game"),  // on match win → reload lobby
+  );
+
+  if (isLoading) return <Loader />;
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-semibold mb-4">Game lobby (WIP)</h1>
+    <div className="p-8 flex flex-col items-center gap-8">
+      <h1 className="text-3xl font-semibold">Game Lobby</h1>
 
-      <div className="mb-6">
-        <label className="block mb-2">Character name</label>
-        <input
-          className="border rounded px-3 py-2 w-64"
-          value={characterName}
-          onChange={(e) => setCharacterName(e.target.value)}
-          placeholder="e.g. QuizKnight"
-        />
+      <UserCard name={me.display_name} elo={me.elo} />
+
+      {status === "idle" && (
         <button
-          className="ml-4 px-4 py-2 bg-green-600 text-white rounded"
-          onClick={() => sendMessage(`CREATE:${characterName}`)}
+          className="px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
+          onClick={queue}
         >
-          Create
+          Find opponent
         </button>
-      </div>
+      )}
 
-      <h2 className="text-xl font-medium mb-2">Server messages</h2>
-      <ul className="list-disc pl-5">
-        {log.map((m, i) => (
-          <li key={i}>{m}</li>
-        ))}
-      </ul>
+      {/* 5️⃣  Queuing */}
+      {status === "queuing" && (
+        <p className="italic text-gray-500">Searching for opponent…</p>
+      )}
+
+      {/* 6️⃣  In‑game (simple placeholder) */}
+      {status === "in‑game" && (
+        <p className="text-xl font-medium">Match in progress… good luck!</p>
+      )}
     </div>
   );
 }
