@@ -4,7 +4,6 @@ import { Suspense, lazy } from "react";
 
 const Login = lazy(() => import("./pages/Login"));
 const Game = lazy(() => import("./pages/Game"));
-const CharacterSelect = lazy(() => import("./pages/CharacterSelect"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
@@ -13,7 +12,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/game" element={<Game />} />
-        <Route path="/characters" element={<CharacterSelect />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
