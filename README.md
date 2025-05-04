@@ -2,9 +2,40 @@
 
 private repo
 
+# Backend 
 
-## Frontend
-### React + Vite
+## Set Up
+
+```bash
+# create venv
+python3 -m venv venv 
+pip install poetry
+poetry install
+```
+
+to start:
+```bash
+cd backend/
+source venv/bin/activate
+
+bash scripts/start.sh
+```
+Or alternatively, to start a test environment and use the testers tokens
+```bash
+bash scripts/start.sh --test
+```
+
+## Development - Linting
+
+```bash
+poetry install --with dev
+sh scripts/lint.sh
+```
+
+
+
+# Frontend
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -16,3 +47,8 @@ Currently, two official plugins are available:
 #### Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+# Contribution
+
+request reagan chan <rrr.chanhiulok@gmail.com> for more info
