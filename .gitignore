@@ -4,3 +4,6 @@ __pycache__
 # environment
 .venv/
 venv
+
+# firebase creds
+*/config/*.json

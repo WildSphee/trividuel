@@ -3,14 +3,16 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from app.schemas.players import Player
-
+from google.cloud.firestore_v1 import AsyncClient
 
 class GameSession:
     """Represents a live 1‑vs‑1 game session."""
 
-    def __init__(self, player1: Player, player2: Player):
+    def __init__(self, player1: Player, player2: Player, db: AsyncClient):
         self.id: str = str(uuid.uuid4())
         self.players: List[Player] = [player1, player2]
+        self.db: AsyncClient = db
+
         for p in self.players:
             p.state = "playing"
             p.session_id = self.id
@@ -54,15 +56,15 @@ class GameSession:
         loser.elo = max(100, loser.elo - 25)
 
         # Update Firestore for each player
-        batch = db.batch()
+        batch = self.db.batch()
         for p in self.players:
-            doc_ref = db.collection("players").document(p.uid)
+            doc_ref = self.db.collection("players").document(p.uid)
             batch.set(
                 doc_ref,
                 {
                     "elo": p.elo,
-                    "updated": datetime.utcnow(),
-                    "recent": db.field_path("recent").array_union(
+                    "updated": datetime.utcnow,
+                    "recent": self.db.field_path("recent").array_union(
                         [op.uid for op in self.players if op.uid != p.uid]
                     ),
                 },
