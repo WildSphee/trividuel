@@ -2,22 +2,16 @@ import asyncio
 import os
 
 import firebase_admin
+from dotenv import load_dotenv
 from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import auth, credentials
 from google.cloud.firestore_v1 import AsyncClient
-from schemas.gamesession import GameSession, GameSessionManager
-from schemas.matchmaking import MatchmakingQueue
-from schemas.players import Player, PlayerManager
 
-# ---------------------------------------------------------------------------
-# Firebase INITIALISATION ----------------------------------------------------
-# ---------------------------------------------------------------------------
+from app.schemas.gamesession import GameSession, GameSessionManager
+from app.schemas.matchmaking import MatchmakingQueue
+from app.schemas.players import Player, PlayerManager
 
-# Expect environment variables:
-# GOOGLE_APPLICATION_CREDENTIALS : path to service‑account json
-# FIREBASE_PROJECT_ID           : your Firebase project ID
-#
 cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 project_id = os.getenv("FIREBASE_PROJECT_ID")
 
@@ -35,7 +29,6 @@ db = AsyncClient(project=project_id)
 
 
 player_manager = PlayerManager()
-
 
 match_queue = MatchmakingQueue()
 
@@ -67,8 +60,11 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def _startup():
-    """Kick off the asynchronous matchmaker."""
+    load_dotenv()
+
     print("Trividuel Starting")
+
+    # Kick off the asynchronous matchmaker.
     asyncio.create_task(matchmaker_loop())
 
 

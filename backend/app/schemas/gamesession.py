@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from schemas.players import Player
+from app.schemas.players import Player
 
 
 class GameSession:

@@ -1,7 +1,7 @@
 import asyncio
 from typing import List, Optional
 
-from schemas.players import Player
+from app.schemas.players import Player
 
 
 class MatchmakingQueue:
