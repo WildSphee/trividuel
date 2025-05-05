@@ -16,7 +16,7 @@ from google.cloud.firestore_v1 import AsyncClient
 
 from app.config.config import settings
 from app.dependencies.auth import get_current_user
-from app.schemas.gamesession import GameSession, GameSessionManager
+from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
 
@@ -35,7 +35,7 @@ player_manager = PlayerManager()
 
 match_queue = MatchmakingQueue()
 
-session_manager = GameSessionManager()
+session_manager = SessionManager()
 
 
 async def matchmaker_loop():
@@ -130,7 +130,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
 
     # Automatically enqueue for matchmaking
     await match_queue.add(player)
-    await ws.send_json({"type": "queued"})
+    await ws.send_json({"type": "queue", "message": "start"})
 
     try:
         while True:

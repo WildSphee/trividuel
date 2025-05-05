@@ -1,3 +1,5 @@
+import asyncio
+import random
 import uuid
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -6,88 +8,195 @@ from google.cloud.firestore_v1 import AsyncClient
 
 from app.schemas.players import Player
 
+SAMPLE_QUESTIONS = [
+    {
+        "question": "What is the capital of France?",
+        "choices": ["Berlin", "Madrid", "Paris", "Rome"],
+        "answer": 2,
+    },
+    {
+        "question": "2 + 2 = ?",
+        "choices": ["3", "4", "5", "22"],
+        "answer": 1,
+    },
+    {
+        "question": "Which planet is known as the Red Planet?",
+        "choices": ["Earth", "Mars", "Venus", "Jupiter"],
+        "answer": 1,
+    },
+]
+
 
 class GameSession:
-    """Represents a live 1‑vs‑1 game session."""
+    QUESTION_TIMEOUT = 10
+    REVEAL_TIME = 3
 
-    def __init__(self, player1: Player, player2: Player, db: AsyncClient):
-        self.id: str = str(uuid.uuid4())
-        self.players: List[Player] = [player1, player2]
-        self.db: AsyncClient = db
-
+    def __init__(self, p1: Player, p2: Player, db: AsyncClient):
+        self.id = str(uuid.uuid4())
+        self.players: List[Player] = [p1, p2]
         for p in self.players:
             p.state = "playing"
             p.session_id = self.id
 
+        self.questions = random.sample(SAMPLE_QUESTIONS, k=len(SAMPLE_QUESTIONS))
+        self.current_index = -1
+        self.db = db
+        self.timer_task: Optional[asyncio.Task] = None
+
+    # ------------------------------------------------------------------ utils
+    async def _safe_send(self, player: Player, payload: Dict):
+        if player.websocket.client_state.name == "CONNECTED":
+            await player.websocket.send_json(payload)
+
+    async def broadcast(self, payload: Dict):
+        for p in self.players:
+            await self._safe_send(p, payload)
+
+    # ------------------------------------------------------- session lifecycle
     async def start(self):
-        for p in self.players:
-            payload = {
-                "type": "game_start",
-                "session_id": self.id,
-                "players": str(self.players),
+        # notify both players that opponent was found
+        await self.broadcast(
+            {
+                "type": "game",
+                "message": "found",
+                "extra": {
+                    "session_id": self.id,
+                    "players": [p.uid for p in self.players],
+                },
             }
-            await p.websocket.send_json(payload)
+        )
+        # wait 3s then send first question
+        asyncio.create_task(self._delayed_next_question(3))
 
-    async def handle_disconnect(self, leaver_uid: str):
-        """Called when a player disconnects (voluntarily or network)."""
-        remaining = [p for p in self.players if p.uid != leaver_uid]
-        if remaining:
-            winner = remaining[0]
-            await winner.websocket.send_json(
-                {
-                    "type": "match_win",
-                    "reason": "opponent_left",
-                    "extra": {"opponent": leaver_uid},
-                }
-            )
-        # Clean player states
+    async def _delayed_next_question(self, delay: int):
+        await asyncio.sleep(delay)
+        await self.next_question()
+
+    async def next_question(self):
+        # reset answers
         for p in self.players:
-            p.state = "idle"
-            p.session_id = None
-
-        # Persist result
-        await self._record_result(leaver_uid)
-
-    async def _record_result(self, loser_uid: str):
-        winner, loser = None, None
-        for p in self.players:
-            if p.uid == loser_uid:
-                loser = p
-            else:
-                winner = p
-        if winner is None or loser is None:
+            p.current_answer = None
+        self.current_index += 1
+        if self.current_index >= len(self.questions):
+            # out of questions – choose winner by remaining lives
+            await self._end_game("no_more_questions")
             return
 
-        # Basic ELO increment/decrement
-        winner.elo += 25
-        loser.elo = max(100, loser.elo - 25)
+        q = self.questions[self.current_index]
+        await self.broadcast(
+            {
+                "type": "game",
+                "message": "question",
+                "extra": {
+                    "index": self.current_index,
+                    "question": q["question"],
+                    "choices": q["choices"],
+                },
+            }
+        )
+        # start timeout reveal task
+        self.timer_task = asyncio.create_task(self._reveal_after_timeout())
 
-        # Update Firestore for each player
+    async def _reveal_after_timeout(self):
+        await asyncio.sleep(self.QUESTION_TIMEOUT)
+        await self.reveal()
+
+    async def receive_answer(self, uid: str, choice_idx: int):
+        # record answer
+        for p in self.players:
+            if p.uid == uid:
+                p.current_answer = choice_idx
+                break
+        # if both answered early, cancel timer and reveal
+        if all(p.current_answer is not None for p in self.players):
+            if self.timer_task:
+                self.timer_task.cancel()
+            await self.reveal()
+
+    async def reveal(self):
+        q = self.questions[self.current_index]
+        correct = q["answer"]
+        # update lives
+        for p in self.players:
+            if p.current_answer != correct:
+                p.lives -= 1
+        # build stats
+        extra = {
+            "correct": correct,
+            "answers": {p.uid: p.current_answer for p in self.players},
+            "lives": {p.uid: p.lives for p in self.players},
+        }
+        await self.broadcast({"type": "game", "message": "reveal", "extra": extra})
+
+        # determine if someone lost
+        losers = [p for p in self.players if p.lives <= 0]
+        if losers:
+            await asyncio.sleep(self.REVEAL_TIME)
+            await self._end_game("life_zero")
+            return
+
+        # else schedule next question
+        asyncio.create_task(self._delayed_next_question(self.REVEAL_TIME))
+
+    async def handle_disconnect(self, leaver_uid: str):
+        await self.broadcast(
+            {
+                "type": "game",
+                "message": "end",
+                "extra": {
+                    "winner": next(p.uid for p in self.players if p.uid != leaver_uid),
+                    "reason": "opponent_left",
+                },
+            }
+        )
+        await self._cleanup_states()
+
+    async def _record_result(self, winner_uid: str, loser_uid: str):
         batch = self.db.batch()
         for p in self.players:
-            doc_ref = self.db.collection("players").document(p.uid)
-            batch.set(
-                doc_ref,
-                {"elo": p.elo, "updated": datetime.now()},
-                merge=True,
-            )
+            delta = 25 if p.uid == winner_uid else -25
+            new_elo = max(100, p.elo + delta)
+            doc = self.db.collection("players").document(p.uid)
+            batch.set(doc, {"elo": new_elo, "updated": datetime.utcnow()}, merge=True)
         await batch.commit()
 
+    async def _end_game(self, reason: str):
+        winner = max(self.players, key=lambda p: (p.lives, p.elo)).uid
+        await self.broadcast(
+            {
+                "type": "game",
+                "message": "end",
+                "extra": {"winner": winner, "reason": reason},
+            }
+        )
+        # persist
+        loser = next(p.uid for p in self.players if p.uid != winner)
+        await self._record_result(winner, loser)
+        await self._cleanup_states()
 
-class GameSessionManager:
-    """Registry of all active sessions."""
+    async def _cleanup_states(self):
+        # reset state for all players
+        for p in self.players:
+            p.state = "lobby"
+            p.session_id = None
+        # TODO: persist stats / ELO if desired
+        SessionManager.remove(self.id)
 
-    def __init__(self):
-        self._sessions: Dict[str, GameSession] = {}
 
-    def add(self, session: GameSession):
-        self._sessions[session.id] = session
+class SessionManager:
+    _sessions: Dict[str, GameSession] = {}
 
-    def get_by_player(self, uid: str) -> Optional[GameSession]:
-        for s in self._sessions.values():
+    @classmethod
+    def add(cls, s: GameSession):
+        cls._sessions[s.id] = s
+
+    @classmethod
+    def get_by_player(cls, uid: str) -> Optional[GameSession]:
+        for s in cls._sessions.values():
             if any(p.uid == uid for p in s.players):
                 return s
         return None
 
-    def remove(self, sid: str):
-        self._sessions.pop(sid, None)
+    @classmethod
+    def remove(cls, sid: str):
+        cls._sessions.pop(sid, None)

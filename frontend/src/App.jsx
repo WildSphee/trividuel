@@ -13,6 +13,7 @@ export default function App() {
         <Route path="/" element={<Login />} />
         <Route path="/game" element={<Game />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/:sessionId" element={<GameRoom />} />
       </Routes>
     </Suspense>
   );

@@ -8,20 +8,26 @@ class Player:
 
     def __init__(
         self,
+        name: Optional[str],
         uid: str,
         ws: WebSocket,
         elo: int = 1200,
         recent: Optional[List[str]] = None,
     ):
+        self.name = name
         self.uid = uid
         self.websocket = ws
         self.elo = elo
         self.recent_opponents: List[str] = recent or []
-        self.state: Literal["queueing", "playing", "idle"] = "queueing"
+        self.state: Literal["lobby", "queuing", "playing", "idle"] = "lobby"
         self.session_id: Optional[str] = None
 
-    def __repr__(self):
-        return f"Player:{self.uid}\n elo:{self.elo}"
+    def __repr__(self) -> Dict:
+        return {
+            "name": self.name,
+            "elo": self.elo,
+            "uid": self.uid,
+        }
 
 
 class PlayerManager:

@@ -3,7 +3,7 @@ export default function NotFound() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white shadow-lg rounded-lg p-8 text-center max-w-md">
         <img 
-          src="/public/notfound.png" 
+          src="notfound.png" 
           alt="Logo"
           className="mx-auto mb-6" 
           style={{ maxWidth: '150px' }}
