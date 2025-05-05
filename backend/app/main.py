@@ -122,7 +122,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         recent = []
         await doc_ref.set({"elo": elo, "recent": recent, "display_name": display_name})
 
-    player = Player(uid, ws, elo, recent)
+    player = Player(uid, ws, elo, display_name, recent)
     player_manager.add(player)
 
     # Notify client auth successful
@@ -139,7 +139,6 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
             if session := session_manager.get_by_player(uid):
                 for p in session.players:
                     if p.uid != uid:
-                        print(f"{p.uid=}")
                         await p.websocket.send_json({"type": "relay", "payload": data})
 
     except WebSocketDisconnect:

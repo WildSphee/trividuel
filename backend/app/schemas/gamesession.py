@@ -68,6 +68,10 @@ class GameSession:
         # wait 3s then send first question
         asyncio.create_task(self._delayed_next_question(3))
 
+        # set players lifes to 4
+        for p in self.players:
+            p.lifes = 4
+
     async def _delayed_next_question(self, delay: int):
         await asyncio.sleep(delay)
         await self.next_question()

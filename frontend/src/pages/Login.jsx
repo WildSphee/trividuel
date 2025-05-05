@@ -6,6 +6,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   // When a user is already logged‑in (e.g. page refresh) → skip login screen
+  console.log("currently login as:", user)
   if (user) {
     navigate("/game", { replace: true });
     return null;

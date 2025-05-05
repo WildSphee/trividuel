@@ -1,23 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
-import { getMe } from "@/api/player";
-import Loader from "../components/Loader";
-import UserCard from "@/components/UserCard";
-import useMatchmaking from "@/hooks/useMatchmaking";
-import { useNavigate } from "react-router-dom";
+import { useQuery }     from "@tanstack/react-query";
+import { getMe }        from "@/api/player";
+import Loader           from "@/components/Loader";
+import UserCard         from "@/components/UserCard";
+import useMatchmaking   from "@/hooks/useMatchmaking";
+import { useNavigate }  from "react-router-dom";
 
 export default function Game() {
-  const navigate = useNavigate();
+  const nav = useNavigate();
 
-  // Load player profile
-  const { data: me, isLoading } = useQuery({ queryKey: ["me"], queryFn: getMe });
+  // load player profile
+  const { data: me, isLoading } = useQuery({
+    queryKey: ["me"],
+    queryFn : getMe,
+  });
 
-  // Hook that handles WebSocket + status
+  // matchmaking 
   const { status, queue } = useMatchmaking(
-    (gameStart) => {
-      console.log("Game started:", gameStart);
-      // future: navigate to /battle/<session_id>
+    (payload) => {
+      console.log("Match-found payload:", payload);
+      const sid = payload.extra?.session_id;
+      if (sid) nav(`/room/${sid}`, { replace: true });
     },
-    () => navigate("/game"),  // on match win → reload lobby
+    () => nav("/game")          // back to lobby after winning
   );
 
   if (isLoading) return <Loader />;
@@ -30,21 +34,21 @@ export default function Game() {
 
       {status === "idle" && (
         <button
-          className="px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
           onClick={queue}
+          className="px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
         >
           Find opponent
         </button>
       )}
 
-      {/* 5️⃣  Queuing */}
+      {/* queuing → searching message */}
       {status === "queuing" && (
         <p className="italic text-gray-500">Searching for opponent…</p>
       )}
 
-      {/* 6️⃣  In‑game (simple placeholder) */}
-      {status === "in‑game" && (
-        <p className="text-xl font-medium">Match in progress… good luck!</p>
+      {/* playing → quick placeholder until GameRoom mounts */}
+      {status === "playing" && (
+        <p className="text-xl font-medium">Match found — brain it on!</p>
       )}
     </div>
   );
