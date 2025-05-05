@@ -10,7 +10,7 @@ private repo
 # create venv
 python3 -m venv venv 
 pip install poetry
-poetry install
+poetry install --no-root
 ```
 
 to start:

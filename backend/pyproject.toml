@@ -1,21 +1,20 @@
 [project]
-name = "trividuel"
+name = "trividuel-backend"
 version = "0.1.0"
-description = "trivia game"
+description = "trivia dueling game"
 authors = [
-    {name = "rrr.chanhiulok@gmail.com"}
+    {name = "reagan",email = "rrr.chanhiulok@gmail.com"}
 ]
-readme = "README.md"
+readme = "../README.md"
 requires-python = ">=3.10"
-package-mode = false
 dependencies = [
     "fastapi (>=0.115.12,<0.116.0)",
-    "uvicorn[standard] (>=0.34.2,<0.35.0)",
+    "uvicorn (>=0.34.2,<0.35.0)",
     "firebase (>=4.0.1,<5.0.0)",
     "python-dotenv (>=1.1.0,<2.0.0)",
     "firebase-admin (>=6.8.0,<7.0.0)",
     "pydantic (>=2.11.4,<3.0.0)",
-    "pydantic-settings (>=2.9.1,<3.0.0)",
+    "pydantic-settings (>=2.9.1,<3.0.0)"
 ]
 
 
