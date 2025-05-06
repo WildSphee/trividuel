@@ -19,7 +19,6 @@ class Player:
         self.elo = elo
         self.recent_opponents: List[str] = recent or []
         self.name = name
-        self.state: Literal["lobby", "queuing", "playing", "idle"] = "lobby"
         self.session_id: Optional[str] = None
 
     def __repr__(self) -> str:

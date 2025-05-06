@@ -125,9 +125,6 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     player = Player(uid, ws, elo, display_name, recent)
     player_manager.add(player)
 
-    # Notify client auth successful
-    await ws.send_json({"type": "auth_ok", "elo": elo, "display_name": display_name})
-
     # Automatically enqueue for matchmaking
     await match_queue.add(player)
     await ws.send_json({"type": "queue", "message": "start"})

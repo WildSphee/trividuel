@@ -35,7 +35,6 @@ class GameSession:
         self.id = str(uuid.uuid4())
         self.players: List[Player] = [p1, p2]
         for p in self.players:
-            p.state = "playing"
             p.session_id = self.id
 
         self.questions = random.sample(SAMPLE_QUESTIONS, k=len(SAMPLE_QUESTIONS))
@@ -181,7 +180,6 @@ class GameSession:
     async def _cleanup_states(self):
         # reset state for all players
         for p in self.players:
-            p.state = "lobby"
             p.session_id = None
         # TODO: persist stats / ELO if desired
         SessionManager.remove(self.id)

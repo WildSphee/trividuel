@@ -25,9 +25,6 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
         const data = JSON.parse(ev.data);
 
         switch (data.type) {
-          case "auth_ok":
-            break;
-
           case "queue":
             toast.success("Searching for opponent…");
             break;

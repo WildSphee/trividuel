@@ -1,5 +1,3 @@
-/* eslint react-refresh/only-export-components: [ "warn", { "allowConstantExport": true } ] */
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
