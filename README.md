@@ -33,8 +33,19 @@ sh scripts/lint.sh
 ```
 
 
-
 # Frontend
+
+## Set Up
+
+set up:
+```bash
+npm i
+```
+cause its using vite:
+```bash
+npm run dev
+```
+
 ## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
