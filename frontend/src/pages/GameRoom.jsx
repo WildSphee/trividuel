@@ -1,23 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate }      from "react-router-dom";
-import { getAuth }    from "firebase/auth";
-import toast          from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
+import toast from "react-hot-toast";
 
-import { createMatchSocket }          from "@/api/ws";
+import { createMatchSocket } from "@/api/ws";
 import { getMatchSocket, setMatchSocket } from "@/api/matchSocketStore";
 
 export default function GameRoom() {
-  const { sessionId } = useParams();        // not used - yet
-  const nav           = useNavigate();
-  const auth          = getAuth();
+  const nav = useNavigate();
+  const auth = getAuth();
 
-  /* runtime refs & state */
-  const wsRef     = useRef(null);
+  /* ------------ runtime refs & state ------------ */
+  const wsRef = useRef(null);
   const [question, setQuestion] = useState(null);
-  const [lives,    setLives]    = useState({});
+  const [lives, setLives] = useState({});
   const [answered, setAnswered] = useState(false);
 
-  /* ---------- establish / reuse WebSocket ---------- */
+  /* ------------- open / reuse WebSocket ------------- */
   useEffect(() => {
     let createdHere = false;
 
@@ -29,9 +28,6 @@ export default function GameRoom() {
         createdHere = true;
       }
 
-      // tell server we’re ready in case we missed the first broadcast
-      wsRef.current.send(JSON.stringify({ type: "game", message: "ready" }));
-
       wsRef.current.onmessage = (ev) => {
         const data = JSON.parse(ev.data);
         if (data.type !== "game") return;
@@ -39,6 +35,13 @@ export default function GameRoom() {
         const { message, extra } = data;
 
         switch (message) {
+          case "found":
+            setLives({});
+            setAnswered(false);
+            setQuestion(null);
+            toast.success("Opponent found – get ready!");
+            break;
+
           case "question":
             setQuestion(extra);
             setAnswered(false);
@@ -46,15 +49,15 @@ export default function GameRoom() {
 
           case "reveal": {
             setLives(extra.lives);
-            const me  = auth.currentUser?.uid;
-            const ok  = extra.answers[me] === extra.correct;
-            toast(ok ? "Correct!" : "Wrong!", { icon: ok ? "✅" : "❌" });
+            const me = auth.currentUser?.uid;
+            const ok = extra.answers[me] === extra.correct;
+            toast(ok ? "Correct 🎉" : "Wrong ❌");
             break;
           }
 
           case "end": {
             const me = auth.currentUser?.uid;
-            toast.success(extra.winner === me ? "You win! 🎉" : "You lose 😢");
+            toast.success(extra.winner === me ? "You win! 🏆" : "You lose 😢");
             setTimeout(() => nav("/game", { replace: true }), 1500);
             break;
           }
@@ -71,19 +74,18 @@ export default function GameRoom() {
         setMatchSocket(null);
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ---------- send answer ---------- */
-  const sendAnswer = (idx) => {
+  /* ---------------- send answer ---------------- */
+  function sendAnswer(idx) {
     if (answered || !wsRef.current) return;
-    wsRef.current.send(
-      JSON.stringify({ type: "game", message: "answer", extra: { choice: idx } })
-    );
+    // backend now expects this simple payload
+    wsRef.current.send(JSON.stringify({ type: "answer", choice: idx }));
     setAnswered(true);
-  };
+  }
 
-  /* ---------- UI ---------- */
+  /* -------------------- UI -------------------- */
   if (!question) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -94,6 +96,7 @@ export default function GameRoom() {
 
   return (
     <div className="p-6 text-center">
+      {/* lives display */}
       <div className="flex justify-between text-xl mb-8">
         {Object.entries(lives).map(([uid, hp]) => (
           <span key={uid}>
@@ -102,8 +105,10 @@ export default function GameRoom() {
         ))}
       </div>
 
+      {/* question */}
       <h2 className="text-2xl mb-6">{question.question}</h2>
 
+      {/* choices */}
       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
         {question.choices.map((c, i) => (
           <button

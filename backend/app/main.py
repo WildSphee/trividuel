@@ -42,7 +42,7 @@ session_manager = SessionManager()
 async def matchmaker_loop():
     """Background coroutine that continually pairs players."""
     while True:
-        print(f"{session_manager._sessions=}")
+        print(f"{session_manager._sessions.keys()=}")
         print(f"{match_queue._queue=}")
         pair = await match_queue.pop_pair()
         if pair:
@@ -110,14 +110,20 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         await ws.close(code=4401)
         return
 
+
     # default data guarenteed to exist in firebase
     uid = user["uid"]
     display_name = user["name"]
+
+    if player_manager.get(uid):
+        await ws.send_text("You are already connected from another session.")
+        await ws.close(code=4401)
+        return
+    
+    await ws.accept()
     print(f"new connection from {display_name}")
 
-    await ws.accept()
-
-    pdata = _fetch_or_create_player(user)
+    pdata = await _fetch_or_create_player(user)
 
     player = Player(uid, ws, pdata["elo"], display_name)
 
