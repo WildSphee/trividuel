@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Query
 from firebase_admin import auth
 
-from app.config.config import settings
+from app.config import settings
 
 
 async def get_current_user(token: str = Query(...)):

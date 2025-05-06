@@ -1,4 +1,5 @@
 import asyncio
+from typing import Dict
 
 import firebase_admin
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
 
-from app.config.config import settings
+from app.config import settings
 from app.dependencies.auth import get_current_user
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
@@ -49,7 +50,27 @@ async def matchmaker_loop():
             session = GameSession(p1, p2, db)
             session_manager.add(session)
             await session.start()
-        await asyncio.sleep(2)  # matchmaking tick
+
+        # matchmaking tick
+        await asyncio.sleep(settings.game_queueing_tick)
+
+
+async def _fetch_or_create_player(user) -> Dict:
+    uid = user["uid"]
+    doc_ref = db.collection("players").document(uid)
+    snapshot = await doc_ref.get()
+
+    if snapshot.exists:
+        pdata = snapshot.to_dict()
+    else:
+        pdata = {
+            "uid": uid,
+            "elo": 1200,
+            "display_name": user["name"],
+        }
+        await doc_ref.set(pdata)
+
+    return pdata
 
 
 app = FastAPI()
@@ -69,29 +90,14 @@ async def _startup():
 
     print("Trividuel Starting")
 
-    # Kick off the asynchronous matchmaker.
     asyncio.create_task(matchmaker_loop())
 
 
 @app.get("/me")
-async def get_me(user=Depends(get_current_user)):
+async def get_me(user=Depends(get_current_user)) -> Dict:
     """REST endpoint for the player to fetch their profile."""
-    uid = user["uid"]
 
-    doc_ref = db.collection("players").document(uid)
-    snapshot = await doc_ref.get()
-
-    if snapshot.exists:
-        pdata = snapshot.to_dict()
-    else:
-        pdata = {
-            "elo": 1200,
-            "recent": [],
-            "display_name": user["name"],
-        }
-        await doc_ref.set(pdata)
-
-    return {"uid": uid, **pdata}
+    return await _fetch_or_create_player(user)
 
 
 @app.websocket("/play")
@@ -104,25 +110,18 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         await ws.close(code=4401)
         return
 
+    # default data guarenteed to exist in firebase
     uid = user["uid"]
     display_name = user["name"]
     print(f"new connection from {display_name}")
 
     await ws.accept()
 
-    # Fetch or create player profile
-    doc_ref = db.collection("players").document(uid)
-    snapshot = await doc_ref.get()
-    if snapshot.exists:
-        pdata = snapshot.to_dict()
-        elo = pdata.get("elo", 1200)
-        recent = pdata.get("recent", [])
-    else:
-        elo = 1200
-        recent = []
-        await doc_ref.set({"elo": elo, "recent": recent, "display_name": display_name})
+    pdata = _fetch_or_create_player(user)
 
-    player = Player(uid, ws, elo, display_name, recent)
+    player = Player(uid, ws, pdata["elo"], display_name)
+
+    # add player to the player manager
     player_manager.add(player)
 
     # Automatically enqueue for matchmaking
@@ -132,11 +131,11 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     try:
         while True:
             data = await ws.receive_json()
-            # Route in‑game messages to opponent if in session
-            if session := session_manager.get_by_player(uid):
-                for p in session.players:
-                    if p.uid != uid:
-                        await p.websocket.send_json({"type": "relay", "payload": data})
+
+            # send user message to the game if the user sends
+            session = session_manager.get_by_player(uid)
+            if session:
+                await session.handle_client_message(uid, data)
 
     except WebSocketDisconnect:
         # Remove from queue if still waiting

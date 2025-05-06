@@ -51,6 +51,10 @@ class GameSession:
         for p in self.players:
             await self._safe_send(p, payload)
 
+    async def _delayed_next_question(self, delay: int):
+        await asyncio.sleep(delay)
+        await self.next_question()
+
     # ------------------------------------------------------- session lifecycle
     async def start(self):
         # notify both players that opponent was found
@@ -69,11 +73,7 @@ class GameSession:
 
         # set players lifes to 4
         for p in self.players:
-            p.lifes = 4
-
-    async def _delayed_next_question(self, delay: int):
-        await asyncio.sleep(delay)
-        await self.next_question()
+            p.lifes = 2
 
     async def next_question(self):
         # reset answers
@@ -183,6 +183,61 @@ class GameSession:
             p.session_id = None
         # TODO: persist stats / ELO if desired
         SessionManager.remove(self.id)
+
+    async def handle_client_message(self, uid: str, data: Dict) -> None:
+        """handle all the client json from the ws will be routed here if they're in a game"""
+
+        msg_type = data.get("type")
+
+        # --------------------------------------------------------
+        # 1.  The player answered the current question
+        # --------------------------------------------------------
+        if msg_type == "answer":
+            # Expected: { "type": "answer", "choice": <int> }
+            choice = data.get("choice")
+            if isinstance(choice, int):
+                await self.receive_answer(uid, choice)
+            return
+
+        # --------------------------------------------------------
+        # 2.  The player voluntarily quits the match
+        # --------------------------------------------------------
+        if msg_type == "quit":
+            # Expected: { "type": "quit" }
+            await self.handle_disconnect(leaver_uid=uid)
+            return
+
+        # --------------------------------------------------------
+        # 3.  Keep-alive ping  (optional but useful on mobile)
+        # --------------------------------------------------------
+        if msg_type == "ping":
+            # { "type": "ping", "id": <any> }
+            sender = next((p for p in self.players if p.uid == uid), None)
+            if sender:
+                await self._safe_send(sender, {"type": "pong", "id": data.get("id")})
+            return
+
+        # --------------------------------------------------------
+        # 4.  Simple chat relay (optional)
+        # --------------------------------------------------------
+        if msg_type == "chat":
+            # { "type": "chat", "text": "hello" }
+            text = (data.get("text") or "")[:500]  # truncate to 500 chars
+            await self.broadcast({"type": "chat", "from": uid, "text": text})
+            return
+
+        # --------------------------------------------------------
+        # 5.  Unknown message type end an error back to sender
+        # --------------------------------------------------------
+        sender = next((p for p in self.players if p.uid == uid), None)
+        if sender:
+            await self._safe_send(
+                sender,
+                {
+                    "type": "error",
+                    "message": f"Unknown message type: {msg_type!r}",
+                },
+            )
 
 
 class SessionManager:
