@@ -8,22 +8,14 @@ export default function GameRoom() {
   const nav = useNavigate();
   const auth = getAuth();
 
-  /* ------------ runtime refs & state ------------ */
   const wsRef = useRef(null);
   const [question, setQuestion] = useState(null);
   const [lives, setLives] = useState({});
   const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
-    const socket = getMatchSocket();
-    wsRef.current = socket;
+    let socket;  
 
-    if (!socket) {
-      nav("/game", { replace: true });
-      return;
-    }
-
-    // ------------  attach listener ------------
     const handleMessage = (ev) => {
       const data = JSON.parse(ev.data);
       if (data.type !== "game") return;
@@ -63,24 +55,38 @@ export default function GameRoom() {
       }
     };
 
-    socket.addEventListener("message", handleMessage);
+    // ⬇️ async IIFE so we can await
+    (async () => {
+      try {
+        socket = await getMatchSocket();
 
-    // ------------  cleanup ------------
+        if (!socket) {
+          toast.error("Game lost socket, redirecting back to game");
+          nav("/game", { replace: true });
+          return;
+        }
+
+        wsRef.current = socket;
+        socket.addEventListener("message", handleMessage);
+      } catch (err) {
+        console.error(err);
+        toast.error("Could not open game socket");
+        nav("/game", { replace: true });
+      }
+    })();
+
+    // cleanup when component unmounts
     return () => {
-      socket.removeEventListener("message", handleMessage);
+      if (socket) socket.removeEventListener("message", handleMessage);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth, nav]);
 
-  /* ---------------- send answer ---------------- */
   function sendAnswer(idx) {
     if (answered || !wsRef.current) return;
-    // backend now expects this simple payload
     wsRef.current.send(JSON.stringify({ type: "answer", choice: idx }));
     setAnswered(true);
   }
 
-  /* -------------------- UI -------------------- */
   if (!question) {
     return (
       <div className="flex items-center justify-center h-screen">

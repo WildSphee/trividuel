@@ -81,7 +81,7 @@ class GameSession:
             p.current_answer = None
         self.current_index += 1
         if self.current_index >= len(self.questions):
-            # out of questions – choose winner by remaining lives
+            # out of questions – choose winner by remaining lifes
             await self._end_game("no_more_questions")
             return
 
@@ -119,20 +119,20 @@ class GameSession:
     async def reveal(self):
         q = self.questions[self.current_index]
         correct = q["answer"]
-        # update lives
+        # update lifes
         for p in self.players:
             if p.current_answer != correct:
-                p.lives -= 1
+                p.lifes -= 1
         # build stats
         extra = {
             "correct": correct,
             "answers": {p.uid: p.current_answer for p in self.players},
-            "lives": {p.uid: p.lives for p in self.players},
+            "lifes": {p.uid: p.lifes for p in self.players},
         }
         await self.broadcast({"type": "game", "message": "reveal", "extra": extra})
 
         # determine if someone lost
-        losers = [p for p in self.players if p.lives <= 0]
+        losers = [p for p in self.players if p.lifes <= 0]
         if losers:
             await asyncio.sleep(self.REVEAL_TIME)
             await self._end_game("life_zero")
@@ -164,7 +164,7 @@ class GameSession:
         await batch.commit()
 
     async def _end_game(self, reason: str):
-        winner = max(self.players, key=lambda p: (p.lives, p.elo)).uid
+        winner = max(self.players, key=lambda p: (p.lifes, p.elo)).uid
         await self.broadcast(
             {
                 "type": "game",

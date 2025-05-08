@@ -22,17 +22,13 @@ from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
 
-HEARTBEAT_INTERVAL = 20
-
-cred_path = settings.google_application_credentials
-project_id = settings.firebase_project_id
-
 # Initialise Firebase Admin SDK
 firebase_admin.initialize_app(
-    credentials.Certificate(cred_path), {"projectId": project_id}
+    credentials.Certificate(settings.google_application_credentials),
+    {"projectId": settings.firebase_project_id},
 )
 
-db = AsyncClient(project=project_id, database="trividuel-db")
+db = AsyncClient(project=settings.firebase_project_id, database="trividuel-db")
 
 
 player_manager = PlayerManager()
@@ -148,7 +144,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     async def heartbeat():
         try:
             while True:
-                await asyncio.sleep(HEARTBEAT_INTERVAL)
+                await asyncio.sleep(settings.HEARTBEAT_INTERVAL)
                 await ws.send_json({"type": "ping"})
         except Exception as e:
             print("ERROR:", e)
@@ -161,6 +157,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
             await session.handle_disconnect(uid)
             session_manager.remove(session.id)
         player_manager.remove(uid)
+        heartbeat_task.cancel()
         if ws.application_state is not WebSocketState.DISCONNECTED:
             await ws.close()
 
@@ -181,5 +178,4 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     except Exception as e:
         print(f"Unexpected error: {e}")
         await disconnect()
-    finally:
-        heartbeat_task.cancel()
+

@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     environment: str = "PROD"
 
     game_queueing_tick: int = 3
+    HEARTBEAT_INTERVAL: int = 20
 
     class Config:
         env_file = ".env"
