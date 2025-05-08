@@ -14,7 +14,7 @@ export default function GameRoom() {
   const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
-    let socket;  
+    let socket;
 
     const handleMessage = (ev) => {
       const data = JSON.parse(ev.data);

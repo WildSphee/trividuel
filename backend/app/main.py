@@ -178,4 +178,3 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     except Exception as e:
         print(f"Unexpected error: {e}")
         await disconnect()
-
