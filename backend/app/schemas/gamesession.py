@@ -216,7 +216,8 @@ class GameSession:
             if sender:
                 await self._safe_send(sender, {"type": "pong", "id": data.get("id")})
             return
-
+        if msg_type == "pong":
+            return
         # --------------------------------------------------------
         # 4.  Simple chat relay (optional)
         # --------------------------------------------------------

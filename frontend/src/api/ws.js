@@ -1,17 +1,28 @@
 import { auth } from "@/firebase";
 
-export async function createMatchSocket() {
-  // Always fetch a fresh token before hand‑shake
+let matchSocket = null;
+
+
+export function clearMatchSocket() {
+  if (matchSocket?.readyState === WebSocket.OPEN) matchSocket.close();
+  matchSocket = null;
+}
+
+export async function getMatchSocket() {
+  // 👉 reuse if it already exists
+  if (matchSocket && matchSocket.readyState === WebSocket.OPEN) return matchSocket;
+  
   const token = await auth.currentUser?.getIdToken();
-  const url   = `ws://localhost:5678/play?token=${token}`;
-
-  const socket = new WebSocket(url);
-
-  // Optional helper for JSON messages
+  if (!token) throw new Error("Auth token not ready");
+  
+  const socket = new WebSocket(`ws://localhost:5678/play?token=${token}`);
+  
   socket.sendJson = (obj) => {
-    if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(obj));
-    else socket.addEventListener("open", () => socket.send(JSON.stringify(obj)));
+    const msg = JSON.stringify(obj);
+    if (socket.readyState === WebSocket.OPEN) socket.send(msg);
+    else socket.addEventListener("open", () => socket.send(msg), { once: true });
   };
-
+  
+  matchSocket = socket;
   return socket;
 }

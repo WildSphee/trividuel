@@ -20,6 +20,10 @@ from app.dependencies.auth import get_current_user
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
+from starlette.websockets import WebSocketState
+
+
+HEARTBEAT_INTERVAL = 20
 
 cred_path = settings.google_application_credentials
 project_id = settings.firebase_project_id
@@ -38,12 +42,19 @@ match_queue = MatchmakingQueue()
 
 session_manager = SessionManager()
 
+def _debug_print() -> None:
+    if player_manager._players:
+        print("Active Players:\n", player_manager._players.values())
+    if session_manager._sessions:
+        print("Active Sessions:\n", session_manager._sessions.keys())
+    if match_queue._queue:
+        print("Active Queueing:\n", match_queue._queue)
+
 
 async def matchmaker_loop():
     """Background coroutine that continually pairs players."""
     while True:
-        print(f"{session_manager._sessions.keys()=}")
-        print(f"{match_queue._queue=}")
+        _debug_print()
         pair = await match_queue.pop_pair()
         if pair:
             p1, p2 = pair
@@ -107,6 +118,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     try:
         user = await get_current_user(token)
     except HTTPException:
+        await ws.send_text("Invalid query token.")
         await ws.close(code=4401)
         return
 
@@ -134,20 +146,41 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     await match_queue.add(player)
     await ws.send_json({"type": "queue", "message": "start"})
 
-    try:
-        while True:
-            data = await ws.receive_json()
-
-            # send user message to the game if the user sends
-            session = session_manager.get_by_player(uid)
-            if session:
-                await session.handle_client_message(uid, data)
-
-    except WebSocketDisconnect:
-        # Remove from queue if still waiting
+    async def heartbeat():
+        try:
+            while True:
+                await asyncio.sleep(HEARTBEAT_INTERVAL)
+                await ws.send_json({"type": "ping"})
+        except Exception as e:
+            print("ERROR:", e)
+            await disconnect()
+    
+    async def disconnect():
         await match_queue.remove(player)
         session = session_manager.get_by_player(uid)
         if session:
             await session.handle_disconnect(uid)
             session_manager.remove(session.id)
         player_manager.remove(uid)
+        if ws.application_state is not WebSocketState.DISCONNECTED:
+            await ws.close()
+
+    # Start heartbeat in background
+    heartbeat_task = asyncio.create_task(heartbeat())
+
+    try:
+        while True:
+            data = await ws.receive_json()
+            print("received:", display_name, data)
+            # send user message to the game if the user sends
+            session = session_manager.get_by_player(uid)
+            if session:
+                await session.handle_client_message(uid, data)
+
+    except WebSocketDisconnect:
+        await disconnect()
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        await disconnect()
+    finally:
+        heartbeat_task.cancel()

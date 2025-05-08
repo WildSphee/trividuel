@@ -1,9 +1,9 @@
-import { useQuery }     from "@tanstack/react-query";
-import { getMe }        from "@/api/player";
-import Loader           from "@/components/Loader";
-import UserCard         from "@/components/UserCard";
-import useMatchmaking   from "@/hooks/useMatchmaking";
-import { useNavigate }  from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/api/player";
+import Loader from "@/components/Loader";
+import UserCard from "@/components/UserCard";
+import useMatchmaking from "@/hooks/useMatchmaking";
+import { useNavigate } from "react-router-dom";
 
 export default function Game() {
   const nav = useNavigate();
@@ -11,7 +11,7 @@ export default function Game() {
   // load player profile
   const { data: me, isLoading } = useQuery({
     queryKey: ["me"],
-    queryFn : getMe,
+    queryFn: getMe,
   });
 
   // matchmaking 
@@ -41,8 +41,8 @@ export default function Game() {
         </button>
       )}
 
-      {/* queuing → searching message */}
-      {status === "queuing" && (
+      {/* queueing → searching message */}
+      {status === "queueing" && (
         <p className="italic text-gray-500">Searching for opponent…</p>
       )}
 

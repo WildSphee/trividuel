@@ -23,8 +23,8 @@ class Player:
         return str(
             {
                 "name": self.name,
-                "elo": self.elo,
-                "uid": self.uid,
+                # "elo": self.elo,
+                # "uid": self.uid,
             }
         )
 

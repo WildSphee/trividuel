@@ -1,25 +1,23 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate }           from "react-router-dom";
-import toast                     from "react-hot-toast";
-import { createMatchSocket }     from "@/api/ws";
-import { auth }                  from "@/firebase";
-
-import { setMatchSocket } from "@/api/matchSocketStore";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { auth } from "@/firebase";
+import { getMatchSocket, clearMatchSocket } from "@/api/ws";
 
 
 export default function useMatchmaking(onGameStart, onMatchWin) {
   const socketRef = useRef(null);
-  const [status, setStatus] = useState("idle");            // idle | queuing | playing
+  const [status, setStatus] = useState("idle");            // idle | queueing | playing
   const navigate = useNavigate();
 
   const queue = async () => {
     try {
-      const ws = await createMatchSocket();
+      const ws = await getMatchSocket();
       socketRef.current = ws;
-      setMatchSocket(ws);                 // store for reuse
-      setStatus("queuing");
 
-      ws.onopen = () => console.log("WS open");
+      setStatus("queueing");
+
+      ws.onopen = () => console.log("WS open, status:", status);
 
       ws.onmessage = (ev) => {
         const data = JSON.parse(ev.data);
@@ -27,6 +25,11 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
         switch (data.type) {
           case "queue":
             toast.success("Searching for opponent…");
+            break;
+
+          case "ping":
+            socketRef.current.send(JSON.stringify({ type: "pong" }));
+
             break;
 
           case "game": {
@@ -61,7 +64,10 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
         setStatus("idle");
       };
 
-      ws.onclose = () => setStatus("idle");
+      ws.onclose = (ev) => {
+        toast.error("ws onclose:", ev.code, ev.reason);
+        setStatus("idle");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Server down. Try again later");
@@ -69,13 +75,12 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
     }
   };
 
-  /* auto‑cleanup when lobby unmounts (but socket stays open for match) */
-  useEffect(() => () => {
-    if (socketRef.current?.readyState === WebSocket.OPEN && status !== "playing") {
-      socketRef.current.close();
-      setMatchSocket(null);
+  /* clean up when player no longer playing */
+  useEffect(() => {
+    if (status === "idle") {
+      toast.error("idle")
+      clearMatchSocket();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   return { status, queue };

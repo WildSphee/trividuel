@@ -1,16 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 export default function Login() {
   const { loginGoogle, loginGithub, user } = useAuth();
   const navigate = useNavigate();
 
   // When a user is already logged‑in (e.g. page refresh) → skip login screen
-  console.log("currently login as:", user)
-  if (user) {
-    navigate("/game", { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    console.log("currently login as:", user)
+    if (user) {
+      navigate("/game", { replace: true });
+      return null;
+    }
+  })
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">

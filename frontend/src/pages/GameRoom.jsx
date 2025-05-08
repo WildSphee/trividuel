@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
-
-import { createMatchSocket } from "@/api/ws";
-import { getMatchSocket, setMatchSocket } from "@/api/matchSocketStore";
+import { getMatchSocket } from "@/api/ws";
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -16,63 +14,60 @@ export default function GameRoom() {
   const [lives, setLives] = useState({});
   const [answered, setAnswered] = useState(false);
 
-  /* ------------- open / reuse WebSocket ------------- */
   useEffect(() => {
-    let createdHere = false;
+    const socket = getMatchSocket();
+    wsRef.current = socket;
 
-    (async () => {
-      wsRef.current = getMatchSocket();
-      if (!wsRef.current) {
-        wsRef.current = await createMatchSocket();
-        setMatchSocket(wsRef.current);
-        createdHere = true;
-      }
+    if (!socket) {
+      nav("/game", { replace: true });
+      return;
+    }
 
-      wsRef.current.onmessage = (ev) => {
-        const data = JSON.parse(ev.data);
-        if (data.type !== "game") return;
+    // ------------  attach listener ------------
+    const handleMessage = (ev) => {
+      const data = JSON.parse(ev.data);
+      if (data.type !== "game") return;
 
-        const { message, extra } = data;
+      const { message, extra } = data;
 
-        switch (message) {
-          case "found":
-            setLives({});
-            setAnswered(false);
-            setQuestion(null);
-            toast.success("Opponent found – get ready!");
-            break;
+      switch (message) {
+        case "found":
+          setLives({});
+          setAnswered(false);
+          setQuestion(null);
+          toast.success("Opponent found - get ready!");
+          break;
 
-          case "question":
-            setQuestion(extra);
-            setAnswered(false);
-            break;
+        case "question":
+          setQuestion(extra);
+          setAnswered(false);
+          break;
 
-          case "reveal": {
-            setLives(extra.lives);
-            const me = auth.currentUser?.uid;
-            const ok = extra.answers[me] === extra.correct;
-            toast(ok ? "Correct 🎉" : "Wrong ❌");
-            break;
-          }
-
-          case "end": {
-            const me = auth.currentUser?.uid;
-            toast.success(extra.winner === me ? "You win! 🏆" : "You lose 😢");
-            setTimeout(() => nav("/game", { replace: true }), 1500);
-            break;
-          }
-
-          default:
-            console.log("WS →", data);
+        case "reveal": {
+          setLives(extra.lives);
+          const me = auth.currentUser?.uid;
+          const ok = extra.answers[me] === extra.correct;
+          toast(ok ? "Correct 🎉" : "Wrong ❌");
+          break;
         }
-      };
-    })();
 
-    return () => {
-      if (createdHere && wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
-        setMatchSocket(null);
+        case "end": {
+          const me = auth.currentUser?.uid;
+          toast.success(extra.winner === me ? "You win! 🏆" : "You lose 😢");
+          setTimeout(() => nav("/game", { replace: true }), 1500);
+          break;
+        }
+
+        default:
+          console.log("WS →", data);
       }
+    };
+
+    socket.addEventListener("message", handleMessage);
+
+    // ------------  cleanup ------------
+    return () => {
+      socket.removeEventListener("message", handleMessage);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -96,6 +91,7 @@ export default function GameRoom() {
 
   return (
     <div className="p-6 text-center">
+      <h1>HELLO</h1>
       {/* lives display */}
       <div className="flex justify-between text-xl mb-8">
         {Object.entries(lives).map(([uid, hp]) => (
