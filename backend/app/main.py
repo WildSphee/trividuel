@@ -14,14 +14,13 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
+from starlette.websockets import WebSocketState
 
 from app.config import settings
 from app.dependencies.auth import get_current_user
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
-from starlette.websockets import WebSocketState
-
 
 HEARTBEAT_INTERVAL = 20
 
@@ -41,6 +40,7 @@ player_manager = PlayerManager()
 match_queue = MatchmakingQueue()
 
 session_manager = SessionManager()
+
 
 def _debug_print() -> None:
     if player_manager._players:
@@ -122,7 +122,6 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         await ws.close(code=4401)
         return
 
-
     # default data guarenteed to exist in firebase
     uid = user["uid"]
     display_name = user["name"]
@@ -131,7 +130,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         await ws.send_text("You are already connected from another session.")
         await ws.close(code=4401)
         return
-    
+
     await ws.accept()
     print(f"new connection from {display_name}")
 
@@ -154,7 +153,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         except Exception as e:
             print("ERROR:", e)
             await disconnect()
-    
+
     async def disconnect():
         await match_queue.remove(player)
         session = session_manager.get_by_player(uid)
