@@ -64,8 +64,7 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
         setStatus("idle");
       };
 
-      ws.onclose = (ev) => {
-        toast.error("ws onclose:", ev.code, ev.reason);
+      ws.onclose = () => {
         setStatus("idle");
       }
     } catch (err) {
@@ -78,7 +77,6 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
   /* clean up when player no longer playing */
   useEffect(() => {
     if (status === "idle") {
-      toast.error("idle")
       clearMatchSocket();
     }
   }, [status]);
