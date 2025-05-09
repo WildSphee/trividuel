@@ -58,6 +58,10 @@ class GameSession:
 
     # ------------------------------------------------------- session lifecycle
     async def start(self):
+        # set players lifes to 2
+        for p in self.players:
+            p.lifes = 2
+
         # notify both players that opponent was found
         await self.broadcast(
             {
@@ -72,10 +76,6 @@ class GameSession:
         )
         # wait 3s then send first question
         asyncio.create_task(self._delayed_next_question(3))
-
-        # set players lifes to 4
-        for p in self.players:
-            p.lifes = 2
 
     async def next_question(self):
         # reset answers
@@ -96,6 +96,7 @@ class GameSession:
                     "index": self.current_index,
                     "question": q["question"],
                     "choices": q["choices"],
+                    "question_timeout": self.QUESTION_TIMEOUT,
                 },
             }
         )
@@ -156,24 +157,37 @@ class GameSession:
         )
         await self._cleanup_states()
 
-    async def _record_result(self, winner_uid: str, loser_uid: str):
+    async def _record_result(self, winner: Player, loser: Player):
         batch = self.db.batch()
-        winner_new, loser_new = elo_calculation(self.players, winner_uid)
+        winner_new, loser_new = elo_calculation(winner, loser)
+        print(f"{winner_new=} {loser_new=}")
 
         # calculate the ELO and set winner and loser respectively
-        for p in self.players:
-            if p.uid == winner_uid:
-                new_elo = winner_new
-            else:
-                new_elo = loser_new
-
-            doc = self.db.collection("players").document(p.uid)
+        def set_elo(player, new_elo):
+            doc = self.db.collection("players").document(player.uid)
             batch.set(doc, {"elo": new_elo, "updated": datetime.utcnow()}, merge=True)
+
+        set_elo(winner, winner_new)
+        set_elo(loser, loser_new)
 
         await batch.commit()
 
     async def _end_game(self, reason: str):
-        winner = max(self.players, key=lambda p: (p.lifes, p.elo)).uid
+        # check for tie first
+        if self.players[0].lifes == self.players[1].lifes:
+            await self.broadcast(
+                {
+                    "type": "game",
+                    "message": "end",
+                    "extra": {"winner": None, "reason": "tie in life"},
+                }
+            )
+            await self._cleanup_states()
+            return
+
+        winner: Player = max(self.players, key=lambda p: (p.lifes))
+        loser: Player = [p for p in self.players if p.uid != winner][0]
+
         await self.broadcast(
             {
                 "type": "game",
@@ -181,8 +195,6 @@ class GameSession:
                 "extra": {"winner": winner, "reason": reason},
             }
         )
-        # persist
-        loser = next(p.uid for p in self.players if p.uid != winner)
         await self._record_result(winner, loser)
         await self._cleanup_states()
 

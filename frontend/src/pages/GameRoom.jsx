@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { getMatchSocket } from "@/api/ws";
+import CountdownTimer from "../components/Timer";
+
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -12,6 +14,7 @@ export default function GameRoom() {
   const [question, setQuestion] = useState(null);
   const [lifes, setLifes] = useState({});
   const [answered, setAnswered] = useState(false);
+  const [questionTimeout, setQuestionTimeout] = useState(0);
 
   useEffect(() => {
     let socket;
@@ -25,6 +28,7 @@ export default function GameRoom() {
       switch (message) {
         case "found":
           setLifes(extra.lifes);
+          console.log("lifes:", lifes)
           setAnswered(false);
           setQuestion(null);
           toast.success("Opponent found - get ready!");
@@ -33,6 +37,7 @@ export default function GameRoom() {
         case "question":
           setQuestion(extra);
           setAnswered(false);
+          setQuestionTimeout(extra.question_timeout);
           break;
 
         case "reveal": {
@@ -111,6 +116,7 @@ export default function GameRoom() {
             {uid.slice(0, 4)}…  💖 {hp}
           </span>
         ))}
+        {!answered && (<CountdownTimer seconds={questionTimeout} />)}
       </div>
 
       {/* question */}
