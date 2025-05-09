@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 from google.cloud.firestore_v1 import AsyncClient
 
 from app.schemas.players import Player
+from app.utils.elo import elo_calculation
 
 SAMPLE_QUESTIONS = [
     {
@@ -65,6 +66,7 @@ class GameSession:
                 "extra": {
                     "session_id": self.id,
                     "players": [p.uid for p in self.players],
+                    "lifes": {p.uid: p.lifes for p in self.players},
                 },
             }
         )
@@ -156,11 +158,18 @@ class GameSession:
 
     async def _record_result(self, winner_uid: str, loser_uid: str):
         batch = self.db.batch()
+        winner_new, loser_new = elo_calculation(self.players, winner_uid)
+
+        # calculate the ELO and set winner and loser respectively
         for p in self.players:
-            delta = 25 if p.uid == winner_uid else -25
-            new_elo = max(100, p.elo + delta)
+            if p.uid == winner_uid:
+                new_elo = winner_new
+            else:
+                new_elo = loser_new
+
             doc = self.db.collection("players").document(p.uid)
             batch.set(doc, {"elo": new_elo, "updated": datetime.utcnow()}, merge=True)
+
         await batch.commit()
 
     async def _end_game(self, reason: str):
