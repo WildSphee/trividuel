@@ -26,8 +26,6 @@ def elo_calculation(
         E  = 1 / (1 + 10 ** ((R_opp - R) / 400))
         S  = 1 for winner, 0 for loser
     """
-    print(f"{winner.name=}")
-    print(f"{loser.name=}")
 
     # --- helper: expected probability winner beats loser -------------------
     def expected(r_a: int, r_b: int) -> float:
@@ -38,5 +36,8 @@ def elo_calculation(
 
     winner_new = max(settings.MIN_ELO, round(winner.elo + k * (1.0 - e_win)))
     loser_new = max(settings.MIN_ELO, round(loser.elo + k * (0.0 - e_los)))
+
+    print(f"Winner: {winner.name} {winner.elo}->{winner_new}")
+    print(f"Loser: {loser.name} {loser.elo}->{loser_new}")
 
     return winner_new, loser_new
