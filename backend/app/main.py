@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
 from starlette.websockets import WebSocketState
+from contextlib import suppress
 
 from app.config import settings
 from app.dependencies.auth import get_current_user
@@ -50,7 +51,7 @@ def _debug_print() -> None:
 async def matchmaker_loop():
     """Background coroutine that continually pairs players."""
     while True:
-        _debug_print()
+        # _debug_print()
         pair = await match_queue.pop_pair()
         if pair:
             p1, p2 = pair
@@ -158,8 +159,10 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
             session_manager.remove(session.id)
         player_manager.remove(uid)
         heartbeat_task.cancel()
+        # try to close the extra connection & suppress the logs to keep terminal clean
         if ws.application_state is not WebSocketState.DISCONNECTED:
-            await ws.close()
+            with suppress(RuntimeError):
+                await ws.close()
 
     # Start heartbeat in background
     heartbeat_task = asyncio.create_task(heartbeat())
@@ -167,7 +170,6 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     try:
         while True:
             data = await ws.receive_json()
-            print("received:", display_name, data)
             # send user message to the game if the user sends
             session = session_manager.get_by_player(uid)
             if session:

@@ -24,7 +24,7 @@ export default function GameRoom() {
 
       switch (message) {
         case "found":
-          setLifes({});
+          setLifes(extra.lifes);
           setAnswered(false);
           setQuestion(null);
           toast.success("Opponent found - get ready!");
@@ -63,7 +63,6 @@ export default function GameRoom() {
       }
     };
 
-    // ⬇️ async IIFE so we can await
     (async () => {
       try {
         socket = await getMatchSocket();
