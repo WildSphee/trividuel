@@ -8,6 +8,8 @@ else
  FPATH=$1
 fi
 
+export $(grep -v '^#' .env | xargs)
+
 # to run this `poetry add --dev pytest-cov coverage`
 pytest \
     --cov-config scripts/.coveragerc \
