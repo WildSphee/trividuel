@@ -17,7 +17,6 @@ export default function Game() {
   // matchmaking 
   const { status, queue } = useMatchmaking(
     (payload) => {
-      console.log("Match-found payload:", payload);
       const sid = payload.extra?.session_id;
       if (sid) nav(`/room/${sid}`, { replace: true });
     },
