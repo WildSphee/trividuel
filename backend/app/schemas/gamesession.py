@@ -62,13 +62,24 @@ class GameSession:
         for p in self.players:
             p.lifes = 2
 
-        # notify both players that opponent was found
+        # notify both players that game found - for useMatchmaking.js
         await self.broadcast(
             {
                 "type": "game",
                 "message": "found",
                 "extra": {
                     "session_id": self.id,
+                },
+            }
+        )
+        # sleep to await players redirect to room first
+        await asyncio.sleep(1)
+        # notify both players that game starts - for GameRoom.jsx
+        await self.broadcast(
+            {
+                "type": "game",
+                "message": "start",
+                "extra": {
                     "players": [p.uid for p in self.players],
                     "lifes": {p.uid: p.lifes for p in self.players},
                 },
@@ -186,13 +197,13 @@ class GameSession:
             return
 
         winner: Player = max(self.players, key=lambda p: (p.lifes))
-        loser: Player = [p for p in self.players if p.uid != winner][0]
+        loser: Player = next(p for p in self.players if p.uid != winner.uid)
 
         await self.broadcast(
             {
                 "type": "game",
                 "message": "end",
-                "extra": {"winner": winner, "reason": reason},
+                "extra": {"winner": winner.uid, "reason": reason},
             }
         )
         await self._record_result(winner, loser)

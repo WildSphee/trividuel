@@ -26,12 +26,12 @@ export default function GameRoom() {
       const { message, extra } = data;
 
       switch (message) {
-        case "found":
+        case "start":
           setLifes(extra.lifes);
           console.log("lifes:", lifes)
           setAnswered(false);
           setQuestion(null);
-          toast.success("Opponent found - get ready!");
+          toast.success("Match Start - get ready!");
           break;
 
         case "question":
@@ -54,7 +54,10 @@ export default function GameRoom() {
 
         case "end": {
           const me = auth.currentUser?.uid;
-          if (extra.winner === me) {
+          if (extra.reason == "tie in life") {
+            toast("Game Tied - No Winners")
+          }
+          else if (extra.winner === me) {
             toast.success("You win! 🏆")
           } else {
             toast.error("You lose 😢");
