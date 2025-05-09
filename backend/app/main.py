@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import suppress
 from typing import Dict
 
 import firebase_admin
@@ -15,7 +16,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
 from starlette.websockets import WebSocketState
-from contextlib import suppress
 
 from app.config import settings
 from app.dependencies.auth import get_current_user
