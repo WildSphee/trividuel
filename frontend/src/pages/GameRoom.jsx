@@ -1,20 +1,29 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { getMatchSocket } from "@/api/ws";
 import CountdownTimer from "../components/Timer";
-
+import LifeCard from "../components/LifeCard";
 
 export default function GameRoom() {
   const nav = useNavigate();
   const auth = getAuth();
+  const me = auth.currentUser?.uid;
 
   const wsRef = useRef(null);
   const [question, setQuestion] = useState(null);
   const [lifes, setLifes] = useState({});
   const [answered, setAnswered] = useState(false);
   const [questionTimeout, setQuestionTimeout] = useState(0);
+
+  const { myLife, opponentLife } = useMemo(() => {
+    const entries = Object.entries(lifes);
+    return {
+      myLife: entries.find(([uid]) => uid === me) ?? [me, 0],
+      opponentLife: entries.find(([uid]) => uid !== me) ?? [null, 0],
+    };
+  }, [lifes, me]);
 
   useEffect(() => {
     let socket;
@@ -28,7 +37,6 @@ export default function GameRoom() {
       switch (message) {
         case "start":
           setLifes(extra.lifes);
-          console.log("lifes:", lifes)
           setAnswered(false);
           setQuestion(null);
           toast.success("Match Start - get ready!");
@@ -42,10 +50,9 @@ export default function GameRoom() {
 
         case "reveal": {
           setLifes(extra.lifes);
-          const me = auth.currentUser?.uid;
           const ok = extra.answers[me] === extra.correct;
           if (ok) {
-            toast.success("Correct 🎉")
+            toast.success("Correct 🎉");
           } else {
             toast.error("Wrong ❌");
           }
@@ -53,15 +60,16 @@ export default function GameRoom() {
         }
 
         case "end": {
-          const me = auth.currentUser?.uid;
-          if (extra.reason == "tie in life") {
-            toast("Game Tied - No Winners")
+          const { winner, reason } = extra;
+
+          if (reason === "tie in life") {
+            toast("Game tied – no winners");
+          } else if (winner) {
+            toast[winner === me ? "success" : "error"](
+              winner === me ? "You win! 🏆" : "You lose 😢"
+            );
           }
-          else if (extra.winner === me) {
-            toast.success("You win! 🏆")
-          } else {
-            toast.error("You lose 😢");
-          }
+
           setTimeout(() => nav("/game", { replace: true }), 1500);
           break;
         }
@@ -113,13 +121,19 @@ export default function GameRoom() {
   return (
     <div className="p-6 text-center">
       {/* lifes display */}
-      <div className="flex justify-between text-xl mb-8">
-        {Object.entries(lifes).map(([uid, hp]) => (
-          <span key={uid}>
-            {uid.slice(0, 4)}…  💖 {hp}
-          </span>
-        ))}
-        {!answered && (<CountdownTimer seconds={questionTimeout} />)}
+      <div className="flex items-center text-xl mb-8">
+        {/* left: you */}
+        <div className="flex-1 text-left">{LifeCard(myLife)}</div>
+
+        {/* centre: timer */}
+        <div className="flex-none">
+          {!answered && (
+            <CountdownTimer seconds={questionTimeout} key={questionTimeout} />
+          )}
+        </div>
+
+        {/* right: opponent */}
+        <div className="flex-1 text-right">{LifeCard(opponentLife)}</div>
       </div>
 
       {/* question */}
