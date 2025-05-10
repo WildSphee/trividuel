@@ -17,7 +17,7 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
 
       setStatus("queueing");
 
-      ws.onopen = () => console.log("WS open, status:", status);
+      ws.onopen = () => console.log("WS open");
 
       ws.onmessage = (ev) => {
         const data = JSON.parse(ev.data);
