@@ -9,6 +9,7 @@ class Question(BaseModel):
     question: str
     choices: List[str]
     answer: int
+    genre: str
 
 
 QUESTION_BANK: List[Question] = []
@@ -25,6 +26,7 @@ async def load_questions_from_csv(csv_path: str) -> None:
             question=row["question"],
             choices=choices,
             answer=int(row["answer"]),
+            genre=row["genre"],
         )
         formatted_questions.append(question)
 
@@ -38,7 +40,7 @@ def get_random_questions(
 ) -> List[Question]:
     """Retrieve a list of random questions, optionally filtered by genre."""
     filtered = (
-        [q for q in QUESTION_BANK if q["genre"].lower() == genre.lower()]
+        [q for q in QUESTION_BANK if q.genre.lower() == genre.lower()]
         if genre
         else QUESTION_BANK
     )
