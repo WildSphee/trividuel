@@ -37,6 +37,7 @@ def _patch_read_csv(monkeypatch, df):
 
 @pytest.mark.asyncio
 async def test_load_questions_from_csv(monkeypatch, mock_question_df):
+    """Loads mock CSV and populates the question bank."""
     _patch_read_csv(monkeypatch, mock_question_df)
 
     await prepare_questions.load_questions_from_csv("fake.csv")
@@ -45,6 +46,7 @@ async def test_load_questions_from_csv(monkeypatch, mock_question_df):
 
 @pytest.mark.asyncio
 async def test_get_random_questions_no_res(monkeypatch, mock_question_df):
+    """Returns empty list when genre doesn't match."""
     _patch_read_csv(monkeypatch, mock_question_df)
 
     await prepare_questions.load_questions_from_csv("fake.csv")
@@ -54,6 +56,7 @@ async def test_get_random_questions_no_res(monkeypatch, mock_question_df):
 
 @pytest.mark.asyncio
 async def test_get_random_questions_with_genre(monkeypatch, mock_question_df):
+    """Returns one question filtered by genre."""
     _patch_read_csv(monkeypatch, mock_question_df)
 
     await prepare_questions.load_questions_from_csv("fake.csv")
