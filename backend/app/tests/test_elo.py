@@ -1,17 +1,17 @@
-import pytest
 
 
-from app.utils.elo import elo_calculation
 from app.schemas.players import Player
+from app.utils.elo import elo_calculation
 
 
 class DummyState:
     """Mimic websockets state enum with .name = 'CONNECTED'"""
+
     def __init__(self, name="CONNECTED"):
         self.name = name
 
-class DummyWebSocket:
 
+class DummyWebSocket:
     def __init__(self):
         self.sent = []
         self.client_state = DummyState()
@@ -19,15 +19,12 @@ class DummyWebSocket:
     async def send_json(self, payload):
         self.sent.append(payload)
 
+
 def make_player(elo: int) -> Player:
     """Return a mock player obj"""
 
-    return Player(
-        uid="1234567890",
-        ws=DummyWebSocket(),
-        elo=elo,
-        name="Tester"
-    )
+    return Player(uid="1234567890", ws=DummyWebSocket(), elo=elo, name="Tester")
+
 
 # TESTS
 
