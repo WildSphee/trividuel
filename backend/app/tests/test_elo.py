@@ -1,5 +1,3 @@
-
-
 from app.schemas.players import Player
 from app.utils.elo import elo_calculation
 
