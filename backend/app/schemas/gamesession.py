@@ -27,7 +27,6 @@ SAMPLE_QUESTIONS = [
     },
 ]
 
-
 class GameSession:
     QUESTION_TIMEOUT = 10
     REVEAL_TIME = 3
