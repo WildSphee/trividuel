@@ -31,6 +31,7 @@ SAMPLE_QUESTIONS = [
 class GameSession:
     QUESTION_TIMEOUT = 10
     REVEAL_TIME = 3
+    QUESTION_COUNT = 5
 
     def __init__(self, p1: Player, p2: Player, db: AsyncClient):
         self.id = str(uuid.uuid4())
@@ -38,7 +39,7 @@ class GameSession:
         for p in self.players:
             p.session_id = self.id
 
-        self.questions = random.sample(SAMPLE_QUESTIONS, k=len(SAMPLE_QUESTIONS))
+        self.questions = random.sample(SAMPLE_QUESTIONS, k=self.QUESTION_COUNT)
         self.current_index = -1
         self.db = db
         self.timer_task: Optional[asyncio.Task] = None

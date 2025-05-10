@@ -43,8 +43,6 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
             }
 
             if (message === "end") {
-              const me = auth.currentUser?.uid;
-              toast.success(extra.winner === me ? "You win! 🎉" : "You lose 😢");
               setStatus("idle");
               onMatchWin?.(data);
               ws.close();

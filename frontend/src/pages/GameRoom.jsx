@@ -63,7 +63,7 @@ export default function GameRoom() {
           const { winner, reason } = extra;
 
           if (reason === "tie in life") {
-            toast("Game tied – no winners");
+            toast("Game tied - no winners");
           } else if (winner) {
             toast[winner === me ? "success" : "error"](
               winner === me ? "You win! 🏆" : "You lose 😢"
@@ -128,7 +128,7 @@ export default function GameRoom() {
         {/* centre: timer */}
         <div className="flex-none">
           {!answered && (
-            <CountdownTimer seconds={questionTimeout} key={questionTimeout} />
+            <CountdownTimer seconds={questionTimeout} key={question.index} />
           )}
         </div>
 
