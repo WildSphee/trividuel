@@ -22,6 +22,7 @@ from app.dependencies.auth import get_current_user
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
+from app.utils.prepare_questions import load_questions_from_csv
 
 # Initialise Firebase Admin SDK
 firebase_admin.initialize_app(
@@ -98,6 +99,10 @@ async def _startup():
 
     print("Trividuel Starting")
 
+    # load the start up questions
+    asyncio.create_task(load_questions_from_csv(settings.QUESTION_SET_PATH))
+
+    # start the queueing system for players to play
     asyncio.create_task(matchmaker_loop())
 
 

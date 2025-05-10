@@ -1,6 +1,6 @@
 import asyncio
-import random
 import uuid
+from contextlib import suppress
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -8,24 +8,8 @@ from google.cloud.firestore_v1 import AsyncClient
 
 from app.schemas.players import Player
 from app.utils.elo import elo_calculation
+from app.utils.prepare_questions import get_random_questions
 
-SAMPLE_QUESTIONS = [
-    {
-        "question": "What is the capital of France?",
-        "choices": ["Berlin", "Madrid", "Paris", "Rome"],
-        "answer": 2,
-    },
-    {
-        "question": "2 + 2 = ?",
-        "choices": ["3", "4", "5", "22"],
-        "answer": 1,
-    },
-    {
-        "question": "Which planet is known as the Red Planet?",
-        "choices": ["Earth", "Mars", "Venus", "Jupiter"],
-        "answer": 1,
-    },
-]
 
 class GameSession:
     QUESTION_TIMEOUT = 10
@@ -38,7 +22,7 @@ class GameSession:
         for p in self.players:
             p.session_id = self.id
 
-        self.questions = random.sample(SAMPLE_QUESTIONS, k=self.QUESTION_COUNT)
+        self.questions = get_random_questions(self.QUESTION_COUNT)
         self.current_index = -1
         self.db = db
         self.timer_task: Optional[asyncio.Task] = None
@@ -46,7 +30,8 @@ class GameSession:
     # ------------------------------------------------------------------ utils
     async def _safe_send(self, player: Player, payload: Dict):
         if player.websocket.client_state.name == "CONNECTED":
-            await player.websocket.send_json(payload)
+            with suppress(RuntimeError):
+                await player.websocket.send_json(payload)
 
     async def broadcast(self, payload: Dict):
         for p in self.players:
@@ -105,8 +90,8 @@ class GameSession:
                 "message": "question",
                 "extra": {
                     "index": self.current_index,
-                    "question": q["question"],
-                    "choices": q["choices"],
+                    "question": q.question,
+                    "choices": q.choices,
                     "question_timeout": self.QUESTION_TIMEOUT,
                 },
             }
@@ -132,7 +117,7 @@ class GameSession:
 
     async def reveal(self):
         q = self.questions[self.current_index]
-        correct = q["answer"]
+        correct = q.answer
         # update lifes
         for p in self.players:
             if p.current_answer != correct:
