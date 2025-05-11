@@ -16,6 +16,7 @@ export default function UserCard({
   total_won,
   size = "lg",
   showChangeTypeButton = false,
+  onTypeChanged = () => {},
 }) {
   const [loading, setLoading] = useState(false);
   const [spinning, setSpinning] = useState(false);
@@ -51,12 +52,13 @@ export default function UserCard({
     setSpinning(true);
     try {
       await changeType();
+      onTypeChanged();
     } catch (err) {
       console.error(err);
     } finally {
-      // stop spin after 0.6 s
+      // stop spin after .6s
       setTimeout(() => setSpinning(false), 600);
-      // unlock button after 1 s
+      // unlock button after 1s
       setTimeout(() => setLoading(false), 1000);
     }
   };
@@ -81,7 +83,7 @@ export default function UserCard({
             aria-label="Change type"
             onClick={handleClick}
             disabled={loading}
-            className="rounded-full p-1 transition hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full p-1 transition hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {/* Tailwind arbitrary property to reverse spin direction */}
             <RotateCcw

@@ -1,160 +1,72 @@
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
+import { getMe }   from "@/api/player";
+import Loader      from "@/components/Loader";
+import UserCard    from "@/components/UserCard";
+import useMatchmaking from "@/hooks/useMatchmaking";
 import { useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth";
-import toast from "react-hot-toast";
-import { getMatchSocket } from "@/api/ws";
-import CountdownTimer from "../components/Timer";
-import LifeCard from "../components/LifeCard";
 
-export default function GameRoom() {
+export default function Game() {
   const nav = useNavigate();
-  const auth = getAuth();
-  const me = auth.currentUser?.uid;
 
-  const wsRef = useRef(null);
-  const [question, setQuestion] = useState(null);
-  const [lifes, setLifes] = useState({});
-  const [answered, setAnswered] = useState(false);
-  const [questionTimeout, setQuestionTimeout] = useState(0);
+  /** ─── player profile ─────────────────────────────── */
+  const [me, setMe]       = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
-  const { myLife, opponentLife } = useMemo(() => {
-    const entries = Object.entries(lifes);
-    return {
-      myLife: entries.find(([uid]) => uid === me) ?? [me, 0],
-      opponentLife: entries.find(([uid]) => uid !== me) ?? [null, 0],
-    };
-  }, [lifes, me]);
+  const fetchMe = async () => {
+    setLoading(true);
+    try {
+      const data = await getMe();
+      setMe(data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  /* load once on mount */
   useEffect(() => {
-    let socket;
+    fetchMe();
+  }, []);
 
-    const handleMessage = (ev) => {
-      const data = JSON.parse(ev.data);
-      if (data.type !== "game") return;
+  /** ─── matchmaking (unchanged) ────────────────────── */
+  const { status, queue } = useMatchmaking(
+    (payload) => {
+      const sid = payload.extra?.session_id;
+      if (sid) nav(`/room/${sid}`, { replace: true });
+    },
+    () => nav("/game") // back to lobby after winning
+  );
 
-      const { message, extra } = data;
-
-      switch (message) {
-        case "start":
-          setLifes(extra.lifes);
-          setAnswered(false);
-          setQuestion(null);
-          toast.success("Match Start - get ready!");
-          break;
-
-        case "question":
-          setQuestion(extra);
-          setAnswered(false);
-          setQuestionTimeout(extra.question_timeout);
-          break;
-
-        case "reveal": {
-          setLifes(extra.lifes);
-          const ok = extra.answers[me] === extra.correct;
-          if (ok) {
-            toast.success("Correct 🎉");
-          } else {
-            toast.error("Wrong ❌");
-          }
-          break;
-        }
-
-        case "end": {
-          const { winner, reason } = extra;
-
-          if (reason === "tie in life") {
-            toast("Game tied - no winners");
-          } else if (winner) {
-            toast[winner === me ? "success" : "error"](
-              winner === me ? "You win! 🏆" : "You lose 😢"
-            );
-          }
-
-          setTimeout(() => nav("/game", { replace: true }), 1500);
-          break;
-        }
-
-        default:
-          console.log("WS →", data);
-      }
-    };
-
-    (async () => {
-      try {
-        socket = await getMatchSocket();
-
-        if (!socket) {
-          toast.error("Game lost socket, redirecting back to game");
-          nav("/game", { replace: true });
-          return;
-        }
-
-        wsRef.current = socket;
-        socket.addEventListener("message", handleMessage);
-      } catch (err) {
-        console.error(err);
-        toast.error("Could not open game socket");
-        nav("/game", { replace: true });
-      }
-    })();
-
-    // cleanup when component unmounts
-    return () => {
-      if (socket) socket.removeEventListener("message", handleMessage);
-    };
-  }, [auth, nav]);
-
-  function sendAnswer(idx) {
-    if (answered || !wsRef.current) return;
-    wsRef.current.send(JSON.stringify({ type: "answer", choice: idx }));
-    setAnswered(true);
-  }
-
-  if (!question) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Waiting for the first question…
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
 
   return (
-    <div className="p-6 text-center">
-      {/* lifes display */}
-      <div className="flex items-center text-xl mb-8">
-        {/* left: you */}
-        <div className="flex-1 text-left">{LifeCard(myLife)}</div>
+    <div className="p-8 flex flex-col items-center gap-8">
+      <h1 className="text-3xl font-semibold">Game Lobby</h1>
 
-        {/* centre: timer */}
-        <div className="flex-none">
-          {!answered && (
-            <CountdownTimer seconds={questionTimeout} key={question.index} />
-          )}
-        </div>
+      {/* pass fetchMe so UserCard can refresh profile after change */}
+      <UserCard
+        name={me.display_name}
+        elo={me.elo}
+        type={me.type}
+        total_won={me.total_won}
+        showChangeTypeButton={true}
+        onTypeChanged={fetchMe}
+      />
 
-        {/* right: opponent */}
-        <div className="flex-1 text-right">{LifeCard(opponentLife)}</div>
-      </div>
+      {status === "idle" && (
+        <button
+          onClick={queue}
+          className="px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
+        >
+          Find opponent
+        </button>
+      )}
 
-      {/* question */}
-      <h2 className="text-2xl mb-6">{question.question}</h2>
+      {status === "queueing" && (
+        <p className="italic text-gray-500">Searching for opponent…</p>
+      )}
 
-      {/* choices */}
-      <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
-        {question.choices.map((c, i) => (
-          <button
-            key={i}
-            onClick={() => sendAnswer(i)}
-            disabled={answered}
-            className="border rounded-lg p-4 hover:bg-gray-100 disabled:opacity-50"
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-
-      {answered && (
-        <p className="mt-6 italic text-gray-500">Waiting for opponent…</p>
+      {status === "playing" && (
+        <p className="text-xl font-medium">Match found — brain it on!</p>
       )}
     </div>
   );
