@@ -29,7 +29,7 @@ export default function Game() {
     <div className="p-8 flex flex-col items-center gap-8">
       <h1 className="text-3xl font-semibold">Game Lobby</h1>
 
-      <UserCard name={me.display_name} elo={me.elo} />
+      <UserCard name={me.display_name} elo={me.elo} type={me.type} total_won={me.total_won} showChangeTypeButton={true} />
 
       {status === "idle" && (
         <button

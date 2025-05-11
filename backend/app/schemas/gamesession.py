@@ -9,7 +9,7 @@ from google.cloud.firestore_v1 import AsyncClient
 from app.schemas.players import Player
 from app.utils.elo import elo_calculation
 from app.utils.prepare_questions import get_random_questions
-
+from app.db import create_doc_ref
 
 class GameSession:
     QUESTION_TIMEOUT = 10
@@ -65,7 +65,7 @@ class GameSession:
                 "type": "game",
                 "message": "start",
                 "extra": {
-                    "players": [p.uid for p in self.players],
+                    "players": [p.to_dict() for p in self.players],
                     "lifes": {p.uid: p.lifes for p in self.players},
                 },
             }
@@ -159,12 +159,15 @@ class GameSession:
         print(f"{winner_new=} {loser_new=}")
 
         # calculate the ELO and set winner and loser respectively
-        def set_elo(player, new_elo):
-            doc = self.db.collection("players").document(player.uid)
-            batch.set(doc, {"elo": new_elo, "updated": datetime.utcnow()}, merge=True)
+        async def set_elo_and_wins(player, new_elo, win_increment: int = 0):
+            doc = await create_doc_ref(player.uid)
+            payload = {"elo": new_elo, "updated": datetime.utcnow()}
+            if win_increment:
+                payload.update({"total_won": player.total_won + 1})
+            batch.set(doc, payload, merge=True)
 
-        set_elo(winner, winner_new)
-        set_elo(loser, loser_new)
+        await set_elo_and_wins(winner, winner_new, 1)
+        await set_elo_and_wins(loser, loser_new)
 
         await batch.commit()
 

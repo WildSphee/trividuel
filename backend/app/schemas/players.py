@@ -10,23 +10,32 @@ class Player:
         self,
         uid: str,
         ws: WebSocket,
+        type: str,
+        total_won=0,
         elo: int = 1200,
         name: Optional[str] = None,
     ):
         self.uid = uid
         self.websocket = ws
+        self.type = type
+        self.total_won = total_won
         self.elo = elo
         self.name = name
         self.session_id: Optional[str] = None
 
+    def __str__(self):
+        return f"{self.name}-{self.elo}"
+
     def __repr__(self) -> str:
-        return str(
-            {
-                "name": self.name,
-                # "elo": self.elo,
-                # "uid": self.uid,
-            }
-        )
+        return str(self.to_dict())
+
+    def to_dict(self) -> Dict:
+        return {
+            "name": self.name,
+            "type": self.type,
+            "elo": self.elo,
+            "total_won": self.total_won,
+        }
 
 
 class PlayerManager:

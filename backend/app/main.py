@@ -1,11 +1,8 @@
 import asyncio
 from contextlib import suppress
-from typing import Dict
 
-import firebase_admin
 from dotenv import load_dotenv
 from fastapi import (
-    Depends,
     FastAPI,
     HTTPException,
     Query,
@@ -13,24 +10,16 @@ from fastapi import (
     WebSocketDisconnect,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from firebase_admin import credentials
-from google.cloud.firestore_v1 import AsyncClient
 from starlette.websockets import WebSocketState
 
 from app.config import settings
+from app.db import db, fetch_or_create_player
 from app.dependencies.auth import get_current_user
+from app.routers import player_router
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
 from app.utils.prepare_questions import load_questions_from_csv
-
-# Initialise Firebase Admin SDK
-firebase_admin.initialize_app(
-    credentials.Certificate(settings.google_application_credentials),
-    {"projectId": settings.firebase_project_id},
-)
-
-db = AsyncClient(project=settings.firebase_project_id, database="trividuel-db")
 
 
 player_manager = PlayerManager()
@@ -64,25 +53,8 @@ async def matchmaker_loop():
         await asyncio.sleep(settings.game_queueing_tick)
 
 
-async def _fetch_or_create_player(user) -> Dict:
-    uid = user["uid"]
-    doc_ref = db.collection("players").document(uid)
-    snapshot = await doc_ref.get()
-
-    if snapshot.exists:
-        pdata = snapshot.to_dict()
-    else:
-        pdata = {
-            "uid": uid,
-            "elo": 1200,
-            "display_name": user["name"],
-        }
-        await doc_ref.set(pdata)
-
-    return pdata
-
-
 app = FastAPI()
+app.include_router(player_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -104,13 +76,6 @@ async def _startup():
 
     # start the queueing system for players to play
     asyncio.create_task(matchmaker_loop())
-
-
-@app.get("/me")
-async def get_me(user=Depends(get_current_user)) -> Dict:
-    """REST endpoint for the player to fetch their profile."""
-
-    return await _fetch_or_create_player(user)
 
 
 @app.websocket("/play")
@@ -136,9 +101,16 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     await ws.accept()
     print(f"new connection from {display_name}")
 
-    pdata = await _fetch_or_create_player(user)
+    pdata = await fetch_or_create_player(user)
 
-    player = Player(uid, ws, pdata["elo"], display_name)
+    player = Player(
+        uid=uid,
+        ws=ws,
+        type=pdata["type"],
+        total_won=pdata["total_won"],
+        elo=pdata["elo"],
+        name=display_name,
+    )
 
     # add player to the player manager
     player_manager.add(player)

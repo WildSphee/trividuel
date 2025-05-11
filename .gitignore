@@ -5,6 +5,7 @@ __pycache__
 .coverage
 
 # environment
+node_modules
 .venv/
 venv
 

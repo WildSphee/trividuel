@@ -31,11 +31,11 @@ def test_repr_player():
     a = Player("1234567890", None)
     b = Player("1234567890", DummyWebSocket(), 1200, "Tester")
 
-    assert str(a) == "{'name': None}"
-    assert repr(a) == "{'name': None}"
+    assert str(a) == "None-1200"
+    assert repr(a) == "{'name': None, 'elo': 1200}"
 
-    assert str(b) == "{'name': 'Tester'}"
-    assert repr(b) == "{'name': 'Tester'}"
+    assert str(b) == "Tester-1200"
+    assert repr(b) == "{'name': 'Tester', 'elo': 1200}"
 
 
 def test_player_manager_add():
