@@ -67,7 +67,7 @@ class GameSession:
                 "message": "start",
                 "extra": {
                     "players": [p.to_dict() for p in self.players],
-                    "lifes": {p.uid: p.lifes for p in self.players},
+                    "lifes": {p.uid: [p.name, p.lifes] for p in self.players},
                 },
             }
         )
@@ -127,7 +127,7 @@ class GameSession:
         extra = {
             "correct": correct,
             "answers": {p.uid: p.current_answer for p in self.players},
-            "lifes": {p.uid: p.lifes for p in self.players},
+            "lifes": {p.uid: [p.name, p.lifes] for p in self.players},
         }
         await self.broadcast({"type": "game", "message": "reveal", "extra": extra})
 

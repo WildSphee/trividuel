@@ -126,20 +126,21 @@ export default function GameRoom() {
 
   return (
     <div className="p-6 text-center">
-      {/* lifes display */}
+      {/* name + lifes display */}
       <div className="flex items-center text-xl mb-8">
-        {/* left: you */}
-        <div className="flex-1 text-left">{LifeCard(myLife)}</div>
+        <div className="flex-1 text-left">
+          <LifeCard entry={myLife} size="lg" />
+        </div>
 
-        {/* centre: timer */}
         <div className="flex-none">
           {!answered && (
             <CountdownTimer seconds={questionTimeout} key={question.index} />
           )}
         </div>
 
-        {/* right: opponent */}
-        <div className="flex-1 text-right">{LifeCard(opponentLife)}</div>
+        <div className="flex-1 text-right">
+          <LifeCard entry={opponentLife} size="lg" />
+        </div>
       </div>
 
       {/* question */}

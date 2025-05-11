@@ -21,7 +21,6 @@ import UserCard from "@/components/UserCard";
  */
 export default function VSScreen({ payload, myUid, size = "lg", className = "" }) {
   if (!payload?.extra?.players || !payload?.extra?.lifes) {
-    console.error("<VSScreen> - malformed payload", payload);
     return null;
   }
 
