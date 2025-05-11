@@ -44,6 +44,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
         type={me.type}
         total_won={me.total_won}
         size={size}
+        showChangeTypeButton={false}
       />
 
       <div className="text-5xl font-extrabold tracking-wider select-none">VS</div>
@@ -55,6 +56,8 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
           type={opponent.type}
           total_won={opponent.total_won}
           size={size}
+          showChangeTypeButton={false}
+          flipAvatar={true}
         />
       )}
     </div>

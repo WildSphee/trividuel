@@ -17,6 +17,7 @@ export default function UserCard({
   size = "lg",
   showChangeTypeButton = false,
   onTypeChanged = () => {},
+  flipAvatar = false,
 }) {
   const [loading, setLoading] = useState(false);
   const [spinning, setSpinning] = useState(false);
@@ -70,7 +71,8 @@ export default function UserCard({
       <img
         src={`/${type}.png`}
         alt="avatar"
-        className={`${sizeClasses.img} grid mb-4 object-cover`}
+        className={`${sizeClasses.img} grid mb-4 object-cover ${flipAvatar ? "transform -scale-x-100" : ""
+          }`}
       />
       {/* Player name */}
       <p className={`font-semibold ${sizeClasses.name}`}>{name}</p>
