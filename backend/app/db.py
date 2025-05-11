@@ -38,10 +38,10 @@ async def fetch_or_create_player(user) -> Dict:
         }
         await doc_ref.set(pdata)
 
-    # adding new fields for Player
-    for field, default in {"type": random.choice(player_types), "total_won": 0}.items():
-        if not pdata.get(field):
-            pdata[field] = default
+    # # adding new fields for Player
+    # for field, default in {"type": random.choice(player_types), "total_won": 0}.items():
+    #     if not pdata.get(field):
+    #         pdata[field] = default
 
     await doc_ref.set(pdata)
 

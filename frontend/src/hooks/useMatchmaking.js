@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { auth } from "@/firebase";
 import { getMatchSocket, clearMatchSocket } from "@/api/ws";
 
 

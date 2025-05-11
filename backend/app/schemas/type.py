@@ -1,1 +1,1 @@
-player_types = ["businessman", "skeleton"]
+player_types = ["businessman", "skeleton", "witch", "elf"]
