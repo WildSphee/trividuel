@@ -53,6 +53,8 @@ export default function GameRoom() {
 
         case "reveal": {
           setLifes(extra.lifes);
+          // to hide the timer
+          setAnswered(true);
           const ok = extra.answers[me] === extra.correct;
           if (ok) {
             toast.success("Correct 🎉");
