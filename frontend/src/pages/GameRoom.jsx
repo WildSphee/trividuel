@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { getMatchSocket } from "@/api/ws";
 import CountdownTimer from "../components/Timer";
 import LifeCard from "../components/LifeCard";
+import VSScreen from "@/components/VSScreen"
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -14,6 +15,7 @@ export default function GameRoom() {
   const wsRef = useRef(null);
   const [question, setQuestion] = useState(null);
   const [lifes, setLifes] = useState({});
+  const [data, setData] = useState({});
   const [answered, setAnswered] = useState(false);
   const [questionTimeout, setQuestionTimeout] = useState(0);
 
@@ -40,6 +42,7 @@ export default function GameRoom() {
           setAnswered(false);
           setQuestion(null);
           toast.success("Match Start - get ready!");
+          setData(data);
           break;
 
         case "question":
@@ -112,9 +115,10 @@ export default function GameRoom() {
 
   if (!question) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Waiting for the first question…
-      </div>
+      // <div className="flex items-center justify-center h-screen">
+      //   Waiting for the first question…
+      // </div>
+      <VSScreen payload={data} myUid={auth.currentUser.uid} />
     );
   }
 

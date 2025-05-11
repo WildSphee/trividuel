@@ -68,7 +68,7 @@ export default function UserCard({
       className={`flex flex-col items-center rounded-2xl shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 ${sizeClasses.card}`}
     >
       <img
-        src={`${type}.png`}
+        src={`/${type}.png`}
         alt="avatar"
         className={`${sizeClasses.img} grid mb-4 object-cover`}
       />
