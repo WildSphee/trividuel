@@ -3,7 +3,7 @@ from typing import Dict
 
 from fastapi import APIRouter, Depends, status
 
-from app.db import db, fetch_or_create_player, create_doc_ref
+from app.db import create_doc_ref, fetch_or_create_player
 from app.dependencies.auth import get_current_user
 from app.schemas.type import player_types
 

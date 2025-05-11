@@ -21,7 +21,6 @@ from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player, PlayerManager
 from app.utils.prepare_questions import load_questions_from_csv
 
-
 player_manager = PlayerManager()
 
 match_queue = MatchmakingQueue()

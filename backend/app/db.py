@@ -1,11 +1,12 @@
+import random
+from typing import Dict
+
 import firebase_admin
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
-import random
-from typing import Dict
-from app.schemas.type import player_types
 
 from app.config import settings
+from app.schemas.type import player_types
 
 # Initialise Firebase Admin SDK
 firebase_admin.initialize_app(
@@ -45,4 +46,3 @@ async def fetch_or_create_player(user) -> Dict:
     await doc_ref.set(pdata)
 
     return pdata
-

@@ -22,26 +22,31 @@ class DummyWebSocket:
 
 def test_create_player():
     """The player creation successful"""
-    _ = Player("1234567890", None)
-    _ = Player("1234567890", DummyWebSocket(), 1200, "Tester")
+    _ = Player("1234567890", None, "businessman")
+    _ = Player("1234567890", DummyWebSocket(), "businessman", 0, 1200, "Tester")
 
 
 def test_repr_player():
     """correctly displaying the player objection"""
-    a = Player("1234567890", None)
-    b = Player("1234567890", DummyWebSocket(), 1200, "Tester")
+    a = Player("1234567890", None, "businessman")
+    b = Player("1234567890", DummyWebSocket(), "businessman", 0, 1200, "Tester")
 
     assert str(a) == "None-1200"
-    assert repr(a) == "{'name': None, 'elo': 1200}"
+    assert (
+        repr(a) == "{'name': None, 'type': 'businessman', 'elo': 1200, 'total_won': 0}"
+    )
 
     assert str(b) == "Tester-1200"
-    assert repr(b) == "{'name': 'Tester', 'elo': 1200}"
+    assert (
+        repr(b)
+        == "{'name': 'Tester', 'type': 'businessman', 'elo': 1200, 'total_won': 0}"
+    )
 
 
 def test_player_manager_add():
     """player manager can add a new player to its args"""
     pm = PlayerManager()
-    p1 = Player("1234567890", None)
+    p1 = Player("1234567890", None, "businessman")
 
     pm.add(p1)
 
@@ -53,7 +58,7 @@ def test_player_manager_add():
 def test_player_manager_remove():
     """player manager can remove players"""
     pm = PlayerManager()
-    p1 = Player("1234567890", None)
+    p1 = Player("1234567890", None, "businessman")
 
     pm.add(p1)
     pm.remove("1234567890")
@@ -64,7 +69,7 @@ def test_player_manager_remove():
 def test_player_manager_get():
     """player manager get player base on their uid"""
     pm = PlayerManager()
-    p1 = Player("1234567890", None)
+    p1 = Player("1234567890", None, "businessman")
 
     pm.add(p1)
     res = pm.get("1234567890")

@@ -6,10 +6,11 @@ from typing import Dict, List, Optional
 
 from google.cloud.firestore_v1 import AsyncClient
 
+from app.db import create_doc_ref
 from app.schemas.players import Player
 from app.utils.elo import elo_calculation
 from app.utils.prepare_questions import get_random_questions
-from app.db import create_doc_ref
+
 
 class GameSession:
     QUESTION_TIMEOUT = 10

@@ -21,7 +21,13 @@ class DummyWebSocket:
 def make_player(elo: int) -> Player:
     """Return a mock player obj"""
 
-    return Player(uid="1234567890", ws=DummyWebSocket(), elo=elo, name="Tester")
+    return Player(
+        uid="1234567890",
+        ws=DummyWebSocket(),
+        type="businessman",
+        elo=elo,
+        name="Tester",
+    )
 
 
 # TESTS
