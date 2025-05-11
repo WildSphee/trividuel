@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { getMe }   from "@/api/player";
-import UserCard    from "@/components/UserCard";
+import { getMe } from "@/api/player";
+import UserCard from "@/components/UserCard";
 import useMatchmaking from "@/hooks/useMatchmaking";
 import { useNavigate } from "react-router-dom";
+import Loader from "@/components/Loader";
 
 export default function Game() {
   const nav = useNavigate();
@@ -30,15 +31,19 @@ export default function Game() {
     () => nav("/game")
   );
 
+  if (!me) {
+    return <Loader />;
+  }
+
   return (
     <div className="p-8 flex flex-col items-center gap-8">
       <h1 className="text-3xl font-semibold">Game Lobby</h1>
 
       <UserCard
-        name={me?.display_name}
-        elo={me?.elo}
-        type={me?.type}
-        total_won={me?.total_won}
+        name={me.display_name}
+        elo={me.elo}
+        type={me.type}
+        total_won={me.total_won}
         showChangeTypeButton={true}
         onTypeChanged={fetchMe}
       />
