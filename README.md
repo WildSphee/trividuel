@@ -36,6 +36,7 @@ sh scripts/lint.sh
 ```bash
 sh scripts/test.sh <optinonal_path>
 ```
+If everything set up correctly, the test should all pass.
 
 
 # Frontend
