@@ -70,7 +70,7 @@ export default function UserCard({
       <img
         src={`${type}.png`}
         alt="avatar"
-        className={`${sizeClasses.img} rounded-full mb-4 object-cover`}
+        className={`${sizeClasses.img} grid mb-4 object-cover`}
       />
       {/* Player name */}
       <p className={`font-semibold ${sizeClasses.name}`}>{name}</p>
@@ -85,7 +85,6 @@ export default function UserCard({
             disabled={loading}
             className="rounded-full p-1 transition hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {/* Tailwind arbitrary property to reverse spin direction */}
             <RotateCcw
               className={`${sizeClasses.icon} ${spinning ? "animate-spin [animation-direction:reverse]" : ""}`}
             />

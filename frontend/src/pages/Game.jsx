@@ -8,16 +8,13 @@ export default function Game() {
   const nav = useNavigate();
 
   /** ─── player profile ─────────────────────────────── */
-  const [me, setMe]       = useState(null);
-  const [isLoading, setLoading] = useState(true);
+  const [me, setMe] = useState(null);
 
   const fetchMe = async () => {
-    setLoading(true);
     try {
       const data = await getMe();
       setMe(data);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -38,10 +35,10 @@ export default function Game() {
       <h1 className="text-3xl font-semibold">Game Lobby</h1>
 
       <UserCard
-        name={me.display_name}
-        elo={me.elo}
-        type={me.type}
-        total_won={me.total_won}
+        name={me?.display_name}
+        elo={me?.elo}
+        type={me?.type}
+        total_won={me?.total_won}
         showChangeTypeButton={true}
         onTypeChanged={fetchMe}
       />

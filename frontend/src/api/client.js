@@ -1,42 +1,57 @@
 import axios from "axios";
 import { auth } from "@/firebase";
 
-// Helper that ALWAYS resolves with a (possibly refreshed) token string
-async function getIdToken(force = false) {
-    const user = auth.currentUser;
-    if (!user) return null;
-    return await user.getIdToken(force);
+/* ── 1.  wait until Firebase knows whether a user is signed in ────────── */
+let authReady;                       // cached promise
+
+function waitForAuth() {
+  if (authReady) return authReady;   // reuse the same promise
+
+  authReady = new Promise((resolve) => {
+    const unsub = auth.onAuthStateChanged(() => {
+      unsub();                       // 1-shot listener
+      resolve();
+    });
+  });
+  return authReady;
 }
 
+/* ── 2.  helper that always resolves to a token *or* null ─────────────── */
+async function getIdTokenSafe(force = false) {
+  await waitForAuth();
+  const user = auth.currentUser;
+  return user ? user.getIdToken(force) : null;
+}
+
+/* ── 3.  axios instance with the two interceptors you already had ─────── */
 const client = axios.create({
-    baseURL: "http://localhost:5678",
-    timeout: 5000,
+  baseURL: "http://localhost:5678",
+  timeout: 5000,
 });
 
-// add ?token=ID_TOKEN
+/* attach ?token=… */
 client.interceptors.request.use(async (config) => {
-    const token = await getIdToken();
-    if (token) {
-        // don’t clobber existing params
-        config.params = { ...(config.params || {}), token };
-    }
-    return config;
+  const token = await getIdTokenSafe();     // now guaranteed after auth
+  if (token) {
+    config.params = { ...(config.params || {}), token };
+  }
+  return config;
 });
 
-// refresh token on 401 once
+/* refresh once on 401, then retry */
 client.interceptors.response.use(
-    (res) => res,
-    async (error) => {
-        if (
-            error.response?.status === 401 &&
-            !error.config.__isRetry) {
-            error.config.__isRetry = true;
-            await getIdToken(true);
-            // repeat original call
-            return client(error.config);
-        }
-        return Promise.reject(error);
+  (res) => res,
+  async (error) => {
+    if (
+      error.response?.status === 401 &&
+      !error.config.__isRetry
+    ) {
+      error.config.__isRetry = true;
+      await getIdTokenSafe(true);            // force refresh
+      return client(error.config);           // replay request
     }
+    return Promise.reject(error);
+  }
 );
 
 export default client;
