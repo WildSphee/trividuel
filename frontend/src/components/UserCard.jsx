@@ -27,21 +27,21 @@ export default function UserCard({
     sm: {
       card: "w-48 p-4",
       img: "h-16 w-16",
-      name: "text-base",
+      name: "text-lg",
       meta: "text-xs",
       icon: "h-3 w-3",
     },
     md: {
       card: "w-56 p-5",
       img: "h-20 w-20",
-      name: "text-lg",
+      name: "text-xl",
       meta: "text-sm",
       icon: "h-3.5 w-3.5",
     },
     lg: {
       card: "w-64 p-6",
       img: "h-24 w-24",
-      name: "text-xl",
+      name: "text-2xl",
       meta: "text-base",
       icon: "h-4 w-4",
     },
@@ -78,7 +78,7 @@ export default function UserCard({
       <p className={`font-bubble ${sizeClasses.name}`}>{name}</p>
 
       {/* Player type with optional change button */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <p className={`font-comic capitalize text-gray-500 ${sizeClasses.meta}`}>{type}</p>
         {showChangeTypeButton && (
           <button
