@@ -5,7 +5,7 @@ export async function getMe() {
   return res.data;
 }
 
-export async function changeType(type) {
+export async function changeType() {
   const res = await client.post("/type");
   return res.data;
 }

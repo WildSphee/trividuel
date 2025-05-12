@@ -7,7 +7,7 @@ import { changeType } from "../api/player"; // adjust the path if needed
  * Shows avatar, player name, type, total wins and ELO rating.
  * Size prop (sm | md | lg) scales the card.
  * Optional recycle icon button (showChangeTypeButton) triggers type change.
- * Icon spins CCW for 0.6 s on click and button is disabled for 1 s to prevent spam.
+ * Icon spins CCW for 0.6s on click and button is disabled for 1s to prevent spam.
  */
 export default function UserCard({
   name,

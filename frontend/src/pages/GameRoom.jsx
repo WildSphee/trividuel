@@ -107,7 +107,7 @@ export default function GameRoom() {
     return () => {
       if (socket) socket.removeEventListener("message", handleMessage);
     };
-  }, [auth, nav]);
+  }, [me, auth, nav]);
 
   function sendAnswer(idx) {
     if (answered || !wsRef.current) return;
@@ -117,9 +117,6 @@ export default function GameRoom() {
 
   if (!question) {
     return (
-      // <div className="flex items-center justify-center h-screen">
-      //   Waiting for the first question…
-      // </div>
       <VSScreen payload={data} myUid={auth.currentUser.uid} />
     );
   }

@@ -12,11 +12,8 @@ export default function Game() {
   const [me, setMe] = useState(null);
 
   const fetchMe = async () => {
-    try {
-      const data = await getMe();
-      setMe(data);
-    } finally {
-    }
+    const data = await getMe();
+    setMe(data);
   };
 
   useEffect(() => {
