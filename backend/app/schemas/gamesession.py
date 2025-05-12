@@ -157,7 +157,6 @@ class GameSession:
     async def _record_result(self, winner: Player, loser: Player):
         batch = self.db.batch()
         winner_new, loser_new = elo_calculation(winner, loser)
-        print(f"{winner_new=} {loser_new=}")
 
         # calculate the ELO and set winner and loser respectively
         async def set_elo_and_wins(player, new_elo, win_increment: int = 0):
