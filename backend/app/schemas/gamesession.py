@@ -44,9 +44,9 @@ class GameSession:
 
     # ------------------------------------------------------- session lifecycle
     async def start(self):
-        # set players lifes to 2
+        # set players lifes to 3
         for p in self.players:
-            p.lifes = 2
+            p.lifes = 3
 
         # notify both players that game found - for useMatchmaking.js
         await self.broadcast(
