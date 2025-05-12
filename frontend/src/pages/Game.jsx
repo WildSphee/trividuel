@@ -37,7 +37,7 @@ export default function Game() {
 
   return (
     <div className="p-8 flex flex-col items-center gap-8">
-      <h1 className="text-3xl font-semibold">Game Lobby</h1>
+      <h1 className="font-block text-4xl font-semibold">Game Lobby</h1>
 
       <UserCard
         name={me.display_name}
