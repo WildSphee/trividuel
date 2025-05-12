@@ -68,10 +68,10 @@ export default function GameRoom() {
           const { winner, reason } = extra;
 
           if (reason === "tie in life") {
-            toast("Game tied - no winners");
+            toast("Game Tied - No Winners 🤝");
           } else if (winner) {
             toast[winner === me ? "success" : "error"](
-              winner === me ? "You win! 🏆" : "You lose 😢"
+              winner === me ? "You Win! 🏆" : "You Lost 😢"
             );
           }
 
