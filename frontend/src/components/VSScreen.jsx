@@ -34,22 +34,28 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
   const opponent = paired.find((p) => p.uid !== myUid) ?? paired[1] ?? null;
 
   return (
-    <div
-      className={`flex items-center justify-center h-screen gap-10 bg-gradient-to-br from-white to-slate-50 ${className}`}
-    >
-      <UserCard
-        name={me.name}
-        elo={me.elo}
-        type={me.type}
-        total_won={me.total_won}
-        size={size}
-        showChangeTypeButton={false}
-      />
+    <div className={`relative flex items-center justify-center h-screen gap-10 overflow-hidden ${className}`}>
+      {/* SPINNING STRIPES */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="min-w-[200vw] min-h-[200vh] animate-spotlight-spin bg-[repeating-conic-gradient(black_0deg,black_10deg,white_10deg,white_20deg)] opacity-20 rounded-full mask-hole"></div>
+      </div>
 
-      <div className="font-block text-5xl font-extrabold tracking-wider select-none">VS</div>
-
-      {opponent && (
+      <div className="animate-fade-pop-delay opacity-0">
         <UserCard
+          name={me.name}
+          elo={me.elo}
+          type={me.type}
+          total_won={me.total_won}
+          size={size}
+          showChangeTypeButton={false}
+        />
+      </div>
+      
+      <div className="z-10 font-block text-5xl font-extrabold tracking-wider select-none text-black">VS</div>
+      
+      <div className="animate-fade-pop-delay2 opacity-0">
+        {opponent && (
+          <UserCard
           name={opponent.name}
           elo={opponent.elo}
           type={opponent.type}
@@ -57,8 +63,9 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
           size={size}
           showChangeTypeButton={false}
           flipAvatar={true}
-        />
-      )}
+          />
+        )}
+      </div>
     </div>
   );
 }

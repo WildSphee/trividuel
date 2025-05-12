@@ -66,7 +66,7 @@ export default function UserCard({
 
   return (
     <div
-      className={`flex flex-col items-center rounded-2xl shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 ${sizeClasses.card}`}
+      className={`flex flex-col z-10 items-center rounded-2xl shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 ${sizeClasses.card}`}
     >
       <img
         src={`/${type}.png`}
