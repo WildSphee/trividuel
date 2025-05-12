@@ -13,7 +13,7 @@
 @font-face {
   font-family: "ZenLoop";
   src:
-    url("/fonts/ZenLoop/ZenLoop-Regular.ttf") format("truetype");
+    url("/fonts/ZenLoop/ZenLoop-Italic.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
 }

@@ -79,7 +79,7 @@ export default function UserCard({
 
       {/* Player type with optional change button */}
       <div className="flex items-center gap-2">
-        <p className={`capitalize text-gray-500 ${sizeClasses.meta}`}>{type}</p>
+        <p className={`font-comic capitalize text-gray-500 ${sizeClasses.meta}`}>{type}</p>
         {showChangeTypeButton && (
           <button
             aria-label="Change type"
@@ -97,7 +97,7 @@ export default function UserCard({
       {/* Wins & ELO in one row */}
       <div className="flex items-center gap-4 mt-1">
         <span className={`font-medium ${sizeClasses.meta}`}>🏆 {total_won}</span>
-        <span className={`text-gray-600 ${sizeClasses.meta}`}>ELO {elo}</span>
+        <span className={`font-comic text-gray-600 ${sizeClasses.meta}`}>ELO {elo}</span>
       </div>
     </div>
   );

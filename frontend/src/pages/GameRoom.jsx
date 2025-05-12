@@ -144,7 +144,7 @@ export default function GameRoom() {
       </div>
 
       {/* question */}
-      <h2 className="text-2xl mb-6">{question.question}</h2>
+      <h2 className="font-bubble text-2xl mb-6">{question.question}</h2>
 
       {/* choices */}
       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
@@ -153,7 +153,7 @@ export default function GameRoom() {
             key={i}
             onClick={() => sendAnswer(i)}
             disabled={answered}
-            className="border rounded-lg p-4 hover:bg-gray-100 disabled:opacity-50"
+            className="font-comic text-gray-700 border rounded-lg p-4 hover:bg-gray-100 disabled:opacity-50"
           >
             {c}
           </button>

@@ -46,7 +46,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
         showChangeTypeButton={false}
       />
 
-      <div className="text-5xl font-extrabold tracking-wider select-none">VS</div>
+      <div className="font-block text-5xl font-extrabold tracking-wider select-none">VS</div>
 
       {opponent && (
         <UserCard
