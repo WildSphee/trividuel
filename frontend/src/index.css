@@ -5,7 +5,7 @@
 @font-face {
   font-family: "ZenLoop";
   src:
-  url("/fonts/ZenLoop/ZenLoop-Regular.ttf")   format("truetype");
+    url("/fonts/ZenLoop/ZenLoop-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -13,7 +13,7 @@
 @font-face {
   font-family: "ZenLoop";
   src:
-  url("/fonts/ZenLoop/ZenLoop-Regular.ttf")   format("truetype");
+    url("/fonts/ZenLoop/ZenLoop-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
 }
@@ -23,7 +23,7 @@
 @font-face {
   font-family: "Bubblegum";
   src:
-    url("/fonts/Bubblegum_Sans/BubblegumSans-Regular.ttf")   format("truetype");
+    url("/fonts/Bubblegum_Sans/BubblegumSans-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -33,7 +33,7 @@
 @font-face {
   font-family: "Comic";
   src:
-    url("/fonts/Comic_Relief/ComicRelief-Regular.ttf")   format("truetype");
+    url("/fonts/Comic_Relief/ComicRelief-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -41,7 +41,7 @@
 @font-face {
   font-family: "Comic";
   src:
-  url("/fonts/Comic_Relief/ComicRelief-Bold.ttf")   format("truetype");
+    url("/fonts/Comic_Relief/ComicRelief-Bold.ttf") format("truetype");
   font-weight: 400;
   font-style: bold;
 }
@@ -51,7 +51,7 @@
 @font-face {
   font-family: "Silkscreen";
   src:
-    url("/fonts/Silkscreen/Silkscreen-Regular.ttf")   format("truetype");
+    url("/fonts/Silkscreen/Silkscreen-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -59,7 +59,7 @@
 @font-face {
   font-family: "Silkscreen";
   src:
-  url("/fonts/Silkscreen/Silkscreen-Bold.ttf")   format("truetype");
+    url("/fonts/Silkscreen/Silkscreen-Bold.ttf") format("truetype");
   font-weight: 400;
   font-style: bold;
 }
