@@ -51,18 +51,18 @@ export default function Game() {
       {status === "idle" && (
         <button
           onClick={queue}
-          className="px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
+          className="font-block px-6 py-3 rounded-xl bg-green-600 text-white shadow hover:bg-green-700"
         >
           Find opponent
         </button>
       )}
 
       {status === "queueing" && (
-        <p className="italic text-gray-500">Searching for opponent…</p>
+        <p className="font-comic italic text-gray-500">Searching for opponent…</p>
       )}
 
       {status === "playing" && (
-        <p className="text-xl font-medium">Match found — brain it on!</p>
+        <p className="font-comic text-xl font-medium">Match found — brain it on!</p>
       )}
     </div>
   );

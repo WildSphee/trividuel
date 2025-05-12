@@ -161,7 +161,7 @@ export default function GameRoom() {
       </div>
 
       {answered && (
-        <p className="mt-6 italic text-gray-500">Waiting for opponent…</p>
+        <p className="font-comic mt-6 italic text-gray-500">Waiting for opponent…</p>
       )}
     </div>
   );

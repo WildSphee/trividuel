@@ -16,7 +16,7 @@ export default function UserCard({
   total_won,
   size = "lg",
   showChangeTypeButton = false,
-  onTypeChanged = () => {},
+  onTypeChanged = () => { },
   flipAvatar = false,
 }) {
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ export default function UserCard({
           }`}
       />
       {/* Player name */}
-      <p className={`font-semibold ${sizeClasses.name}`}>{name}</p>
+      <p className={`font-bubble ${sizeClasses.name}`}>{name}</p>
 
       {/* Player type with optional change button */}
       <div className="flex items-center gap-2">
