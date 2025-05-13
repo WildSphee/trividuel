@@ -80,7 +80,6 @@ export default function GameRoom() {
             );
           }
 
-          // setTimeout(() => nav("/game", { replace: true }), 1500);
           break;
         }
 
