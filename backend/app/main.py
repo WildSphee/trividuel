@@ -16,12 +16,11 @@ from app.config import settings
 from app.db import db, fetch_or_create_player
 from app.dependencies.auth import get_current_user
 from app.routers import player_router
+from app.schemas import player_manager
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
 from app.schemas.players import Player
-from app.schemas import player_manager
 from app.utils.prepare_questions import load_questions_from_csv
-
 
 match_queue = MatchmakingQueue()
 

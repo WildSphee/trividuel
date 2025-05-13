@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.db import create_doc_ref, fetch_or_create_player
 from app.dependencies.auth import get_current_user
-from app.schemas import player_types
-from app.schemas import player_manager
+from app.schemas import player_manager, player_types
 
 router = APIRouter(
     tags=["player"],
