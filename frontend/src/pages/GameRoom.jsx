@@ -17,6 +17,7 @@ export default function GameRoom() {
   const [lifes, setLifes] = useState({});
   const [data, setData] = useState({});
   const [answered, setAnswered] = useState(false);
+
   const [questionTimeout, setQuestionTimeout] = useState(0);
 
   const { myLife, opponentLife } = useMemo(() => {
@@ -26,6 +27,9 @@ export default function GameRoom() {
       opponentLife: entries.find(([uid]) => uid !== me) ?? [null, 0],
     };
   }, [lifes, me]);
+
+  // button colours
+  const colours = ["yellow", "blue", "red", "green", "purple", "cyan"];
 
   useEffect(() => {
     let socket;
@@ -150,7 +154,7 @@ export default function GameRoom() {
             key={i}
             onClick={() => sendAnswer(i)}
             disabled={answered}
-            className="font-comic text-gray-700 border rounded-lg p-4 hover:bg-gray-100 disabled:opacity-50"
+            className={`font-comic text-gray-700 pixel-choice-button p-5 bg-${colours[i % colours.length]}-500 hover:bg-${colours[i % colours.length]}-400 disabled:opacity-50`}
           >
             {c}
           </button>
