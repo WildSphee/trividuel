@@ -27,7 +27,9 @@ export default function LifeCard({ entry, maxHp = 3, variant = "hearts", size = 
   return (
     <div key={uid} className="inline-flex items-center gap-2 select-none">
       {/* name (truncate to 10 chars) */}
-      <span className="font-bubble max-w-[15rem] text-[2rem] truncate">{name.slice(0, 10)}</span>
+      <span className="font-bubble truncate text-lg sm:text-xl md:text-2xl max-w-[6rem] sm:max-w-xs md:max-w-sm">
+        {name.slice(0, 10)}
+      </span>
 
       {variant === "hearts" ? (
         /* heart icons variant */
