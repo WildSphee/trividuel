@@ -4,7 +4,9 @@ import UserCard from "@/components/UserCard";
 import useMatchmaking from "@/hooks/useMatchmaking";
 import { useNavigate } from "react-router-dom";
 import Loader from "@/components/Loader";
-import StartButton from "../components/StartButton";
+import StartButton from "@/components/StartButton";
+import PixelSkyBackground from "@/components/PixelSkyBackground";
+
 
 export default function Game() {
   const nav = useNavigate();
@@ -34,32 +36,46 @@ export default function Game() {
   }
 
   return (
-    <div className="p-8 flex flex-col items-center gap-12">
-      <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
-
-      <UserCard
-        name={me.display_name}
-        elo={me.elo}
-        type={me.type}
-        total_won={me.total_won}
-        showChangeTypeButton={true}
-        onTypeChanged={fetchMe}
+    <>
+      <PixelSkyBackground
+        items={[
+          { src: "/pixelskybackground/cloud1.png", count: 3 },
+          { src: "/pixelskybackground/cloud2.png", count: 3 },
+          { src: "/pixelskybackground/cloud3.png", count: 3 },
+          { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
+          { src: "/pixelskybackground/birds.png", count: 1 }
+        ]}
+        minDuration={75}
+        maxDuration={140}
+        scaleRange={[0.3, 0.6]}
       />
+      <div className="p-8 flex flex-col items-center gap-12">
+        <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
 
-      {status === "idle" && (
-        <StartButton 
-          onClick={queue}
-          children={"Find Opponent"}
+        <UserCard
+          name={me.display_name}
+          elo={me.elo}
+          type={me.type}
+          total_won={me.total_won}
+          showChangeTypeButton={true}
+          onTypeChanged={fetchMe}
         />
-      )}
 
-      {status === "queueing" && (
-        <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>
-      )}
+        {status === "idle" && (
+          <StartButton
+            onClick={queue}
+            children={"Find Opponent"}
+          />
+        )}
 
-      {status === "playing" && (
-        <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>
-      )}
-    </div>
+        {status === "queueing" && (
+          <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>
+        )}
+
+        {status === "playing" && (
+          <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>
+        )}
+      </div>
+    </>
   );
 }
