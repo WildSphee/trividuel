@@ -34,8 +34,8 @@ export default function Game() {
   }
 
   return (
-    <div className="p-8 flex flex-col items-center gap-8">
-      <h1 className="font-block text-4xl font-semibold"> Game Lobby</h1>
+    <div className="p-8 flex flex-col items-center gap-12">
+      <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
 
       <UserCard
         name={me.display_name}
@@ -54,11 +54,11 @@ export default function Game() {
       )}
 
       {status === "queueing" && (
-        <p className="font-comic italic text-gray-500">Searching for opponent…</p>
+        <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>
       )}
 
       {status === "playing" && (
-        <p className="font-comic text-xl font-medium">Match found — brain it on!</p>
+        <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>
       )}
     </div>
   );

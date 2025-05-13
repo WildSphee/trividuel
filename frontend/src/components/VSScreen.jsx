@@ -34,7 +34,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
   const opponent = paired.find((p) => p.uid !== myUid) ?? paired[1] ?? null;
 
   return (
-    <div className={`relative flex items-center justify-center h-screen gap-10 overflow-hidden ${className}`}>
+    <div className={`relative flex items-center justify-center h-screen gap-20 overflow-hidden ${className}`}>
       {/* SPINNING STRIPES */}
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div className="min-w-[200vw] min-h-[200vh] animate-spotlight-spin bg-[repeating-conic-gradient(black_0deg,black_10deg,white_10deg,white_20deg)] opacity-20 rounded-full mask-hole"></div>

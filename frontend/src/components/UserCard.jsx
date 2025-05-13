@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { changeType } from "../api/player"; // adjust the path if needed
+import { changeType } from "../api/player";
 
 /**
  * UserCard component
@@ -25,25 +25,25 @@ export default function UserCard({
   // Tailwind size map (icon slightly smaller)
   const sizeClasses = {
     sm: {
-      card: "w-48 p-4",
-      img: "h-22 w-22",
+      card: "w-55 p-5",
+      img: "h-26 w-26",
       name: "text-lg",
-      meta: "text-xs",
-      icon: "h-3 w-3",
+      meta: "text-base",
+      icon: "h-4 w-4",
     },
     md: {
-      card: "w-56 p-5",
-      img: "h-26 w-26",
-      name: "text-xl",
-      meta: "text-sm",
-      icon: "h-3.5 w-3.5",
-    },
-    lg: {
-      card: "w-64 p-6",
+      card: "w-60 p-6",
       img: "h-30 w-30",
       name: "text-2xl",
       meta: "text-base",
-      icon: "h-4 w-4",
+      icon: "h-4.5 w-4.5",
+    },
+    lg: {
+      card: "w-68 p-7",
+      img: "h-33 w-33",
+      name: "text-3xl",
+      meta: "text-xl",
+      icon: "h-5 w-5",
     },
   }[size];
 
@@ -71,14 +71,14 @@ export default function UserCard({
       <img
         src={`/${type}.png`}
         alt="avatar"
-        className={`${sizeClasses.img} grid mb-3 object-cover ${flipAvatar ? "transform -scale-x-100" : ""
+        className={`${sizeClasses.img} grid mb-4 object-cover ${flipAvatar ? "transform -scale-x-100" : ""
           }`}
       />
       {/* Player name */}
-      <p className={`font-bubble usercard-name ${sizeClasses.name}`}>{name}</p>
+      <p className={`font-bubble usercard-name mb-1${sizeClasses.name}`}>{name}</p>
 
       {/* Player type with optional change button */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         <p className={`font-comic capitalize text-gray-700 ${sizeClasses.meta}`}>{type}</p>
         {showChangeTypeButton && (
           <button

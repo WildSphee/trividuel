@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { getMatchSocket } from "@/api/ws";
-import CountdownTimer from "../components/Timer";
-import LifeCard from "../components/LifeCard";
-import VSScreen from "@/components/VSScreen"
+import CountdownTimer from "@/components/Timer";
+import LifeCard from "@/components/LifeCard";
+import VSScreen from "@/components/VSScreen";
+import ChoiceButton from "@/components/ChoiceButton";
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -79,7 +80,7 @@ export default function GameRoom() {
             );
           }
 
-          setTimeout(() => nav("/game", { replace: true }), 1500);
+          // setTimeout(() => nav("/game", { replace: true }), 1500);
           break;
         }
 
@@ -145,25 +146,29 @@ export default function GameRoom() {
       </div>
 
       {/* question */}
-      <h2 className="font-bubble text-2xl mb-6">{question.question}</h2>
+      <h2 className="font-bubble mb-[5rem] text-[2rem]">
+        {question.question}
+      </h2>
 
       {/* choices */}
-      <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+      <div className="grid grid-cols-2 gap-[1.5rem] mx-auto">
         {question.choices.map((c, i) => (
-          <button
+          <ChoiceButton
             key={i}
+            text={c}
             onClick={() => sendAnswer(i)}
             disabled={answered}
-            className={`font-comic text-gray-700 pixel-choice-button p-5 bg-${colours[i % colours.length]}-500 hover:bg-${colours[i % colours.length]}-400 disabled:opacity-50`}
-          >
-            {c}
-          </button>
+            color={colours[i % colours.length]}
+            hoverColor={colours[i % colours.length]}
+          />
         ))}
       </div>
 
       {answered && (
-        <p className="font-comic mt-6 italic text-gray-500">Waiting for opponent…</p>
+        <p class="font-comic mt-6 italic text-gray-500 text-[1.25rem] p-[3rem]">
+          Waiting for opponent…
+        </p>
       )}
     </div>
-  );
+  )
 }
