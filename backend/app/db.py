@@ -6,7 +6,7 @@ from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
 
 from app.config import settings
-from app.schemas.type import player_types
+from app.schemas import player_types
 
 # Initialise Firebase Admin SDK
 firebase_admin.initialize_app(

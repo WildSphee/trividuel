@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, status
 
 from app.db import create_doc_ref, fetch_or_create_player
 from app.dependencies.auth import get_current_user
-from app.schemas.type import player_types
+from app.schemas import player_types
+from app.schemas import player_manager
 
 router = APIRouter(
     tags=["player"],
@@ -35,6 +36,10 @@ async def change_type(user: dict = Depends(get_current_user)) -> dict:
     types_choices = player_types.copy()
     types_choices.remove(pdata["type"])
     new_type = choice(types_choices)
+
+    # if the player is currently queueing, change their type
+    if current_player := player_manager.get(uid):
+        current_player.type = new_type
 
     # Update only the `type` field
     await doc_ref.update({"type": new_type})
