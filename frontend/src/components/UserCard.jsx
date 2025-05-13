@@ -79,7 +79,7 @@ export default function UserCard({
 
       {/* Player type with optional change button */}
       <div className="flex items-center gap-1">
-        <p className={`font-comic capitalize text-gray-500 ${sizeClasses.meta}`}>{type}</p>
+        <p className={`font-comic capitalize text-gray-700 ${sizeClasses.meta}`}>{type}</p>
         {showChangeTypeButton && (
           <button
             aria-label="Change type"
