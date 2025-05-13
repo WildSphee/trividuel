@@ -39,15 +39,17 @@ export default function Game() {
     <>
       <PixelSkyBackground
         items={[
-          { src: "/pixelskybackground/cloud1.png", count: 3 },
-          { src: "/pixelskybackground/cloud2.png", count: 3 },
-          { src: "/pixelskybackground/cloud3.png", count: 3 },
+          { src: "/pixelskybackground/cloud1.png", count: 2 },
+          { src: "/pixelskybackground/cloud2.png", count: 2 },
+          { src: "/pixelskybackground/cloud3.png", count: 2 },
           { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
           { src: "/pixelskybackground/birds.png", count: 1 }
         ]}
-        minDuration={75}
+        minDuration={95}
         maxDuration={140}
-        scaleRange={[0.3, 0.6]}
+        opacity={0.4}
+        scaleRange={[0.3, 0.5]}
+        seed={me.uid}
       />
       <div className="p-8 flex flex-col items-center gap-12">
         <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
