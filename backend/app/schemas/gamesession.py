@@ -13,7 +13,9 @@ from app.utils.prepare_questions import get_random_questions
 
 
 class GameSession:
-    QUESTION_TIMEOUT = 10
+    PLAYER_STARTING_LIFE = 3
+    START_GAME_DELAY = 3
+    QUESTION_TIMEOUT = 30
     REVEAL_TIME = 3
     QUESTION_COUNT = 5
 
@@ -44,9 +46,9 @@ class GameSession:
 
     # ------------------------------------------------------- session lifecycle
     async def start(self):
-        # set players lifes to 3
+        # set players lifes
         for p in self.players:
-            p.lifes = 3
+            p.lifes = self.PLAYER_STARTING_LIFE
 
         # notify both players that game found - for useMatchmaking.js
         await self.broadcast(
@@ -72,7 +74,7 @@ class GameSession:
             }
         )
         # wait 3s then send first question
-        asyncio.create_task(self._delayed_next_question(3))
+        asyncio.create_task(self._delayed_next_question(self.START_GAME_DELAY))
 
     async def next_question(self):
         # reset answers
