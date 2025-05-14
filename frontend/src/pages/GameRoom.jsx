@@ -150,7 +150,7 @@ export default function GameRoom() {
       </h2>
 
       {/* choices */}
-      <div className="grid grid-cols-2 gap-[1.5rem] mx-auto">
+      <div className="grid grid-cols-2 gap-[2rem] mx-auto">
         {question.choices.map((c, i) => (
           <ChoiceButton
             key={i}
@@ -164,7 +164,7 @@ export default function GameRoom() {
       </div>
 
       {answered && (
-        <p class="font-comic mt-6 italic text-gray-500 text-[1.25rem] p-[3rem]">
+        <p className="font-comic mt-6 italic text-gray-500 text-[1.25rem] p-[3rem]">
           Waiting for opponent…
         </p>
       )}
