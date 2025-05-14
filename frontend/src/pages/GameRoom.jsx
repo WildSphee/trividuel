@@ -126,16 +126,19 @@ export default function GameRoom() {
   }
 
   return (
-    <div className="p-6 text-center">
-      {/* name + lifes display */}
-      <div className="flex items-center text-xl mb-8">
+    <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
+      {/* Names + lifes + timer */}
+      <div className="flex items-center text-lg sm:text-xl mb-6 sm:mb-8">
         <div className="flex-1 text-left">
           <LifeCard entry={myLife} size="lg" />
         </div>
 
         <div className="flex-none">
           {!answered && (
-            <CountdownTimer seconds={questionTimeout} key={question.index} />
+            <CountdownTimer
+              seconds={questionTimeout}
+              key={question.index}
+            />
           )}
         </div>
 
@@ -144,13 +147,13 @@ export default function GameRoom() {
         </div>
       </div>
 
-      {/* question */}
-      <h2 className="font-bubble mb-[5rem] text-[2rem]">
+      {/* Question */}
+      <h2 className=" font-bubble mb-4 sm:mb-10 text-[clamp(1.5rem,4.8vw,2rem)] leading-tight break-words line-clamp-4 animate-fade-pop-quick">
         {question.question}
       </h2>
 
-      {/* choices */}
-      <div className="grid grid-cols-2 gap-[2rem] mx-auto">
+      {/* Choice buttons */}
+      <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
         {question.choices.map((c, i) => (
           <ChoiceButton
             key={i}
@@ -163,8 +166,9 @@ export default function GameRoom() {
         ))}
       </div>
 
+      {/* waiting text */}
       {answered && (
-        <p className="font-comic mt-6 italic text-gray-500 text-[1.25rem] p-[3rem]">
+        <p className="font-comic italic text-gray-500 text-base sm:text-lg mt-auto pt-6">
           Waiting for opponent…
         </p>
       )}

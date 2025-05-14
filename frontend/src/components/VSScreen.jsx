@@ -15,7 +15,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
       className={`
         relative h-screen overflow-hidden
         flex items-center justify-center gap-6 sm:gap-20
-        flex-col-reverse sm:flex-row             /* 🔑  mobile = stacked (reversed) */
+        flex-col-reverse sm:flex-row  /* reversed stacked opp on top */
         ${className}
       `}
     >
@@ -27,24 +27,23 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
       </div>
 
       {/* ME (left on desktop → bottom on mobile) */}
-      <div className="animate-fade-pop-delay opacity-0 sm:scale-100 scale-90">
+      <div className="animate-fade-pop-delay-1 opacity-0 sm:scale-100 scale-90">
         <UserCard
           name={me.name}
           elo={me.elo}
           type={me.type}
           total_won={me.total_won}
-          size={size === "lg" ? "md" : size}   /* lg → md on phones */
+          size={size === "lg" ? "md" : size}
           showChangeTypeButton={false}
         />
       </div>
 
-      {/* VS TEXT */}
       <div className="z-10 select-none font-block font-extrabold tracking-wider
-                      text-4xl sm:text-5xl text-black">
+        text-4xl sm:text-5xl text-black">
         VS
       </div>
 
-      {/* OPPONENT (right on desktop → top on mobile) */}
+      {/* OPPONENT */}
       {opponent && (
         <div className="animate-fade-pop-delay2 opacity-0 sm:scale-100 scale-90">
           <UserCard
