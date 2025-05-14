@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketState
 
 from app.config import settings
-from app.db import db, fetch_or_create_player
+from app.db import db, extract_client_ip, fetch_or_create_player
 from app.dependencies.auth import get_current_user
 from app.routers import player_router
 from app.schemas import player_manager
@@ -99,7 +99,8 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
     await ws.accept()
     print(f"new connection from {display_name}")
 
-    pdata = await fetch_or_create_player(user)
+    ip = extract_client_ip(ws)
+    pdata = await fetch_or_create_player(user, ip)
 
     player = Player(
         uid=uid,
@@ -107,6 +108,7 @@ async def websocket_endpoint(ws: WebSocket, token: str = Query(...)):
         type=pdata["type"],
         total_won=pdata["total_won"],
         elo=pdata["elo"],
+        country=pdata["country"],
         name=display_name,
     )
 

@@ -13,7 +13,8 @@ class Player:
         type: str,
         total_won=0,
         elo: int = 1200,
-        name: Optional[str] = None,
+        name: str = "Unknown",
+        country: Optional[str] = None,
     ):
         self.uid = uid
         self.websocket = ws
@@ -21,6 +22,7 @@ class Player:
         self.total_won = total_won
         self.elo = elo
         self.name = name
+        self.country = country
         self.session_id: Optional[str] = None
 
     def __str__(self):
@@ -34,6 +36,7 @@ class Player:
             "name": self.name,
             "type": self.type,
             "elo": self.elo,
+            "country": self.country,
             "total_won": self.total_won,
         }
 

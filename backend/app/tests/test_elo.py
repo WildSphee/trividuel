@@ -26,6 +26,7 @@ def make_player(elo: int) -> Player:
         ws=DummyWebSocket(),
         type="businessman",
         elo=elo,
+        country=None,
         name="Tester",
     )
 

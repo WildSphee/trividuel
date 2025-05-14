@@ -1,9 +1,9 @@
 from random import choice
 from typing import Dict
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 
-from app.db import create_doc_ref, fetch_or_create_player
+from app.db import create_doc_ref, extract_client_ip, fetch_or_create_player
 from app.dependencies.auth import get_current_user
 from app.schemas import player_manager, player_types
 
@@ -13,14 +13,15 @@ router = APIRouter(
 
 
 @router.get("/me")
-async def get_me(user=Depends(get_current_user)) -> Dict:
+async def get_me(request: Request, user=Depends(get_current_user)) -> Dict:
     """REST endpoint for the player to fetch their profile."""
 
-    return await fetch_or_create_player(user)
+    ip = extract_client_ip(request)
+    return await fetch_or_create_player(user, ip)
 
 
 @router.post("/type", status_code=status.HTTP_200_OK)
-async def change_type(user: dict = Depends(get_current_user)) -> dict:
+async def change_type(request: Request, user: dict = Depends(get_current_user)) -> dict:
     """
     Set the current player's `type` to 'skeleton'.
     Returns 200 on success, 404 if the player document is missing.
@@ -29,7 +30,8 @@ async def change_type(user: dict = Depends(get_current_user)) -> dict:
     doc_ref = await create_doc_ref(uid)
 
     # Check that the player doc exists
-    pdata = await fetch_or_create_player(user)
+    ip = extract_client_ip(request)
+    pdata = await fetch_or_create_player(user, ip)
 
     # change player to another random type
     types_choices = player_types.copy()
