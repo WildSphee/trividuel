@@ -70,3 +70,11 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.flag {
+    position: relative;
+    border: 0.5px solid #000;
+    box-shadow: -0.5px 0.5px 0px #000, -1px 1px 0px #000;
+    border-radius: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}

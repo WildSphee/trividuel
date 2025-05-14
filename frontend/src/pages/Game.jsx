@@ -1,4 +1,4 @@
-import { useState, useEffect, Children } from "react";
+import { useState, useEffect } from "react";
 import { getMe } from "@/api/player";
 import UserCard from "@/components/UserCard";
 import useMatchmaking from "@/hooks/useMatchmaking";
@@ -58,6 +58,7 @@ export default function Game() {
           name={me.display_name}
           elo={me.elo}
           type={me.type}
+          country={me.country}
           total_won={me.total_won}
           showChangeTypeButton={true}
           onTypeChanged={fetchMe}

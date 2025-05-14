@@ -33,6 +33,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
           elo={me.elo}
           type={me.type}
           total_won={me.total_won}
+          country={me.country}
           size={size === "lg" ? "md" : size}
           showChangeTypeButton={false}
         />
@@ -51,6 +52,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
             elo={opponent.elo}
             type={opponent.type}
             total_won={opponent.total_won}
+            country={opponent.country}
             size={size === "lg" ? "md" : size}
             showChangeTypeButton={false}
             flipAvatar={true}
