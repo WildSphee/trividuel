@@ -7,8 +7,10 @@ class Settings(BaseSettings):
     firebase_database_id: str = "(default)"
     environment: str = "PROD"
 
-    game_queueing_tick: int = 3
-    HEARTBEAT_INTERVAL: int = 10
+    # INTERVAL TASKS
+    QUEUEING_TICK: int = 3
+    HEARTBEAT_INTERVAL: int = 5
+    LEADERBOARD_INTERVAL: int = 600
 
     # ELO Calculation
     K_FACTOR_DEFAULT: int = 32

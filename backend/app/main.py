@@ -1,4 +1,5 @@
 import asyncio
+import time
 from contextlib import suppress
 
 from dotenv import load_dotenv
@@ -12,10 +13,11 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketState
 
+import app.routers.info as info
 from app.config import settings
 from app.db import db, extract_client_ip, fetch_or_create_player
 from app.dependencies.auth import get_current_user
-from app.routers import player_router
+from app.routers import info_router, player_router
 from app.schemas import player_manager
 from app.schemas.gamesession import GameSession, SessionManager
 from app.schemas.matchmaking import MatchmakingQueue
@@ -36,7 +38,7 @@ def _debug_print() -> None:
         print("Active Queueing:\n", match_queue._queue)
 
 
-async def matchmaker_loop():
+async def matchmaker_loop() -> None:
     """Background coroutine that continually pairs players."""
     while True:
         # _debug_print()
@@ -48,11 +50,26 @@ async def matchmaker_loop():
             await session.start()
 
         # matchmaking tick
-        await asyncio.sleep(settings.game_queueing_tick)
+        await asyncio.sleep(settings.QUEUEING_TICK)
+
+
+async def leaderboard_loop() -> None:
+    """Background coroutine to get the latest leaderboard updates"""
+    while True:
+        try:
+            new_df = await info.fetch_global_stats()
+            async with info.leaderboard_lock:
+                info.global_df = new_df
+                info.last_updated_ts = time.time()
+            print("Leaderboard refreshed:", len(info.global_df), "players")
+        except Exception as exc:
+            print("Leaderboard refresh failed:", exc)
+        await asyncio.sleep(settings.LEADERBOARD_INTERVAL)
 
 
 app = FastAPI()
 app.include_router(player_router)
+app.include_router(info_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,6 +91,9 @@ async def _startup():
 
     # start the queueing system for players to play
     asyncio.create_task(matchmaker_loop())
+
+    # loading leaderboard locally for fetching
+    asyncio.create_task(leaderboard_loop())
 
 
 @app.websocket("/play")
