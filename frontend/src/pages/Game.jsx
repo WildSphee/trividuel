@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "@/components/Loader";
 import StartButton from "@/components/StartButton";
 import PixelSkyBackground from "@/components/PixelSkyBackground";
+import LeaderboardPanel from "@/components/LeaderboardPanel";
 
 
 export default function Game() {
@@ -52,6 +53,7 @@ export default function Game() {
         seed={me.uid}
       />
       <div className="p-8 flex flex-col items-center gap-12">
+        <LeaderboardPanel currentPlayer={me} />
         <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
 
         <UserCard
