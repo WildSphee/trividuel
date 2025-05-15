@@ -2,13 +2,13 @@ import random
 from typing import Dict
 
 import firebase_admin
-import httpx
 from fastapi import Request, WebSocket
 from firebase_admin import credentials
 from google.cloud.firestore_v1 import AsyncClient
 
 from app.config import settings
 from app.schemas import player_types
+from app.utils.country_search import find_country_by_ip
 
 # Initialise Firebase Admin SDK
 firebase_admin.initialize_app(
@@ -49,18 +49,6 @@ def extract_client_ip(obj: Request | WebSocket) -> str:
         return obj.client[0]
 
 
-async def find_country_by_ip(client_ip: str) -> str:
-    if client_ip.startswith("127."):
-        return "DEV"
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://ipapi.co/{client_ip}/json/")
-        data = response.json()
-        country_code = data.get("country")  # e.g., "US", "IN", etc.
-
-    return str(country_code) or "Unknown"
-
-
 async def fetch_or_create_player(user, client_ip) -> Dict:
     uid = user["uid"]
     doc_ref = await create_doc_ref(uid)
@@ -75,13 +63,13 @@ async def fetch_or_create_player(user, client_ip) -> Dict:
             "display_name": user["name"],
             "type": random.choice(player_types),
             "total_won": 0,
-            "country": await find_country_by_ip(client_ip),
+            "country": find_country_by_ip(client_ip),
         }
         await doc_ref.set(pdata)
 
     # adding new fields for Player
     for field, default in {
-        "country": await find_country_by_ip(client_ip),
+        "country": find_country_by_ip(client_ip),
         "total_won": 0,
     }.items():
         if not pdata.get(field):

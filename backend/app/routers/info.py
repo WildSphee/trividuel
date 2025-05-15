@@ -5,9 +5,10 @@ from typing import Dict, List
 import pandas as pd
 from fastapi import APIRouter, Depends, Request
 
-from app.db import db, find_country_by_ip
+from app.db import db
 from app.dependencies.auth import get_current_user
 from app.routers.player import extract_client_ip
+from app.utils.country_search import find_country_by_ip
 
 router = APIRouter(
     tags=["info"],
@@ -88,7 +89,7 @@ async def get_leaderboard(request: Request, user=Depends(get_current_user)) -> D
 
     # infer or remember country
     ip = extract_client_ip(request)
-    country = await find_country_by_ip(ip) or "DEV"
+    country = find_country_by_ip(ip) or "DEV"
 
     df = await get_snapshot()
     return build_response(df, uid, country)

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     firebase_project_id: str
     firebase_database_id: str = "(default)"
     environment: str = "PROD"
+    geoloc_data_path: str
 
     # INTERVAL TASKS
     QUEUEING_TICK: int = 3

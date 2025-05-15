@@ -31,15 +31,16 @@ def test_repr_player():
     a = Player("1234567890", None, "businessman")
     b = Player("1234567890", DummyWebSocket(), "businessman", 0, 1200, "Tester")
 
-    assert str(a) == "None-1200"
+    assert str(a) == "Unknown-1200"
     assert (
-        repr(a) == "{'name': None, 'type': 'businessman', 'elo': 1200, 'total_won': 0}"
+        repr(a)
+        == "{'name': 'Unknown', 'type': 'businessman', 'elo': 1200, 'country': None, 'total_won': 0}"
     )
 
     assert str(b) == "Tester-1200"
     assert (
         repr(b)
-        == "{'name': 'Tester', 'type': 'businessman', 'elo': 1200, 'total_won': 0}"
+        == "{'name': 'Tester', 'type': 'businessman', 'elo': 1200, 'country': None, 'total_won': 0}"
     )
 
 
