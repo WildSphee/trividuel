@@ -38,10 +38,31 @@ def _debug_print() -> None:
         print("Active Queueing:\n", match_queue._queue)
 
 
+async def zombie_sweeper_loop() -> None:
+    """
+    Remove zombie players who can't connect because
+    Reload bug where they click play and instantly reload to create
+    a ghost player in queue which blocks them from further playing
+    """
+    while True:
+        zombies = []
+        for p in player_manager._players.values():
+            try:
+                await p.ws.send_json({"type": "zombie"})
+            except Exception:
+                zombies.append(p)
+
+        for p in zombies:
+            await match_queue.remove(p)
+            player_manager.remove(p.uid)
+
+        await asyncio.sleep(settings.ZOMBIE_SWEEPER_INTERVAL)
+
+
 async def matchmaker_loop() -> None:
     """Background coroutine that continually pairs players."""
     while True:
-        # _debug_print()
+        _debug_print()
         pair = await match_queue.pop_pair()
         if pair:
             p1, p2 = pair
@@ -94,6 +115,9 @@ async def _startup():
 
     # loading leaderboard locally for fetching
     asyncio.create_task(leaderboard_loop())
+
+    # Sweep and remove zombie players
+    asyncio.create_task(zombie_sweeper_loop())
 
 
 @app.websocket("/play")

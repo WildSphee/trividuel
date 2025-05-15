@@ -10,8 +10,9 @@ class Settings(BaseSettings):
 
     # INTERVAL TASKS
     QUEUEING_TICK: int = 3
-    HEARTBEAT_INTERVAL: int = 5
+    HEARTBEAT_INTERVAL: int = 10
     LEADERBOARD_INTERVAL: int = 600
+    ZOMBIE_SWEEPER_INTERVAL: int = 3
 
     # ELO Calculation
     K_FACTOR_DEFAULT: int = 32

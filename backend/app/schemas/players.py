@@ -17,7 +17,7 @@ class Player:
         country: Optional[str] = None,
     ):
         self.uid = uid
-        self.websocket = ws
+        self.ws = ws
         self.type = type
         self.total_won = total_won
         self.elo = elo

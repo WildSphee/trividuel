@@ -22,4 +22,4 @@ fi
 export $(grep -v '^#' .env | xargs)
 
 # run API bot
-poetry run uvicorn app.main:app --host 0.0.0.0 --port 5678 --reload
+poetry run uvicorn app.main:app --host 0.0.0.0 --port 5678 --reload 

@@ -32,9 +32,9 @@ class GameSession:
 
     # ------------------------------------------------------------------ utils
     async def _safe_send(self, player: Player, payload: Dict):
-        if player.websocket.client_state.name == "CONNECTED":
+        if player.ws.client_state.name == "CONNECTED":
             with suppress(RuntimeError):
-                await player.websocket.send_json(payload)
+                await player.ws.send_json(payload)
 
     async def broadcast(self, payload: Dict):
         for p in self.players:
