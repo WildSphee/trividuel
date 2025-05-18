@@ -19,8 +19,7 @@ export function AudioProvider({ children }) {
             volume,
             html5: true
         });
-
-        // try to autoplay after the *first* user gesture (Chrome / Safari rule)
+        // only run once on first user guesture
         const tryPlay = () => {
             const sound = bgmRef.current;
             if (!sound) return;
@@ -34,8 +33,9 @@ export function AudioProvider({ children }) {
         };
 
         window.addEventListener('pointerdown', tryPlay, { once: true });
-
+        
         return () => bgmRef.current?.unload();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
