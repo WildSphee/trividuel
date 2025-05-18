@@ -9,6 +9,7 @@ from app.db import db
 from app.dependencies.auth import get_current_user
 from app.routers.player import extract_client_ip
 from app.utils.country_search import find_country_by_ip
+from app.schemas import player_manager
 
 router = APIRouter(
     tags=["info"],
@@ -35,9 +36,9 @@ async def get_snapshot() -> pd.DataFrame:
 def build_response(df: pd.DataFrame, uid: str, country: str) -> Dict:
     # Global ranking
     df["rank"] = range(1, len(df) + 1)
-    top10 = df.head(10)[["uid", "display_name", "elo", "country", "rank"]].to_dict(
-        "records"
-    )
+    top10 = df.head(10)[
+        ["uid", "display_name", "elo", "country", "rank", "total_won"]
+    ].to_dict("records")
     me_row = df.loc[df["uid"] == uid]
     my_global_rank = int(me_row["rank"].iloc[0]) if not me_row.empty else None
 
@@ -45,9 +46,9 @@ def build_response(df: pd.DataFrame, uid: str, country: str) -> Dict:
     regional_df = df.loc[df["country"] == country]
     regional_df = regional_df.reset_index(drop=True)
     regional_df["rank"] = range(1, len(regional_df) + 1)
-    top10_reg = regional_df.head(10)[["uid", "display_name", "elo", "rank"]].to_dict(
-        "records"
-    )
+    top10_reg = regional_df.head(10)[
+        ["uid", "display_name", "elo", "rank", "total_won"]
+    ].to_dict("records")
     my_reg_rank = (
         int(regional_df.loc[regional_df["uid"] == uid]["rank"].iloc[0])
         if uid in regional_df["uid"].values
@@ -67,7 +68,7 @@ def build_response(df: pd.DataFrame, uid: str, country: str) -> Dict:
 async def fetch_global_stats() -> pd.DataFrame:
     """
     Pull every player document into a DataFrame.
-    Expected fields in each doc: uid, display_name, elo, country (ISO-2 or 'DEV')
+    Expected fields in each doc: uid, display_name, elo, country (ISO-2 or 'IDK')
     """
     docs = db.collection("players").stream()
     players: List[Dict] = [doc.to_dict() | {"uid": doc.id} async for doc in docs]
@@ -75,7 +76,7 @@ async def fetch_global_stats() -> pd.DataFrame:
 
     # basic hygiene
     df["elo"] = pd.to_numeric(df["elo"], errors="coerce").fillna(0).astype(int)
-    df["country"] = df["country"].str.upper().fillna("DEV")
+    df["country"] = df["country"].str.upper().fillna("IDK")
     return df.sort_values("elo", ascending=False).reset_index(drop=True)
 
 
@@ -89,7 +90,15 @@ async def get_leaderboard(request: Request, user=Depends(get_current_user)) -> D
 
     # infer or remember country
     ip = extract_client_ip(request)
-    country = find_country_by_ip(ip) or "DEV"
+    country = find_country_by_ip(ip) or "IDK"
 
     df = await get_snapshot()
     return build_response(df, uid, country)
+
+
+@router.get("/ingamecount")
+async def get_ingamecount(_=Depends(get_current_user)) -> Dict:
+    """
+    Count and return the amount of players in game (queueing + playing)
+    """
+    return {"total": len(player_manager._players)}
