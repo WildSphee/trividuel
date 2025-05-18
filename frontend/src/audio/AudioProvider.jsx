@@ -33,7 +33,7 @@ export function AudioProvider({ children }) {
         };
 
         window.addEventListener('pointerdown', tryPlay, { once: true });
-        
+
         return () => bgmRef.current?.unload();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -43,8 +43,8 @@ export function AudioProvider({ children }) {
         if (!s) return;
 
         if (volume === 0) {
+            // pause mobile audio notification
             s.pause();
-            // Optional: tell the browser the session is inactive
             if ('mediaSession' in navigator)
                 navigator.mediaSession.playbackState = 'none';
         } else {

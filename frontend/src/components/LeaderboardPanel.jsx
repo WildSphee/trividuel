@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, X } from "lucide-react";
 import { getLeaderboard } from "@/api/info";
