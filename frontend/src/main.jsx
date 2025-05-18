@@ -8,18 +8,23 @@ import App from "./App";
 import "./styles/index.css";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AudioProvider } from '@/audio/AudioProvider';
+import SoundControlButton from '@/components/SoundControlButton';
+
 
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-        <Toaster position="bottom-center" />
-      </QueryClientProvider>
+      <AudioProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+          <Toaster position="bottom-center" />
+        </QueryClientProvider>
+      </AudioProvider>
     </AuthProvider>
   </React.StrictMode>
 );

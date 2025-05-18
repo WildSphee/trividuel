@@ -185,8 +185,8 @@
 
 /* ========== Launcher button ========== */
 .leaderboard-launch {
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   background: #df7b23;
   border: 3px solid #000;
   box-shadow: -3px 3px 0 #000, -6px 6px 0 #000;

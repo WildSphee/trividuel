@@ -7,6 +7,7 @@ import Loader from "@/components/Loader";
 import StartButton from "@/components/StartButton";
 import PixelSkyBackground from "@/components/PixelSkyBackground";
 import LeaderboardPanel from "@/components/LeaderboardPanel";
+import SoundControlButton from "../components/SoundControlButton";
 
 
 export default function Game() {
@@ -53,8 +54,9 @@ export default function Game() {
         seed={me.uid}
       />
       {/* ─── Leaderboard – fixed button (expands internally) ── */}
-      <div className="fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
+      <div className="flex flex-col gap-4 fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
         <LeaderboardPanel currentPlayer={me} />
+        <SoundControlButton />
       </div>
 
       <div className="p-8 flex flex-col items-center gap-12">
