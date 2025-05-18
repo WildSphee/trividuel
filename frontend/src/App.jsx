@@ -2,9 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Loader from "./components/Loader";
 import { Suspense, lazy } from "react";
 
-import Login     from "./pages/Login";
-import Game      from "./pages/Game";
-import GameRoom  from "./pages/GameRoom";
+import Login from "./pages/Login";
+import Game from "./pages/Game";
+import GameRoom from "./pages/GameRoom";
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
