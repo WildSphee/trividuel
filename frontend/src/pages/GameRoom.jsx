@@ -7,6 +7,7 @@ import CountdownTimer from "@/components/Timer";
 import LifeCard from "@/components/LifeCard";
 import VSScreen from "@/components/VSScreen";
 import ChoiceButton from "@/components/ChoiceButton";
+import GameTopBar from "@/components/GameTopBar";
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -128,24 +129,13 @@ export default function GameRoom() {
   return (
     <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
       {/* Names + lifes + timer */}
-      <div className="flex items-center text-lg sm:text-xl mb-6 sm:mb-8">
-        <div className="flex-1 text-left">
-          <LifeCard entry={myLife} size="lg" />
-        </div>
-
-        <div className="flex-none">
-          {!answered && (
-            <CountdownTimer
-              seconds={questionTimeout}
-              key={question.index}
-            />
-          )}
-        </div>
-
-        <div className="flex-1 text-right">
-          <LifeCard entry={opponentLife} size="lg" />
-        </div>
-      </div>
+      <GameTopBar
+        myLifeEntry={myLife}
+        opponentLifeEntry={opponentLife}
+        answered={answered}
+        questionTimeout={questionTimeout}
+        questionIndex={question.index}
+      />
 
       {/* Question */}
       <h2 className=" font-bubble mb-4 sm:mb-10 text-[clamp(1.5rem,4.8vw,2rem)] leading-tight break-words line-clamp-4 animate-fade-pop-quick">

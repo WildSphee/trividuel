@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from google.cloud.firestore_v1 import AsyncClient
+from starlette.websockets import WebSocketState
 
 from app.db import create_doc_ref
 from app.schemas.players import Player
@@ -32,7 +33,7 @@ class GameSession:
 
     # ------------------------------------------------------------------ utils
     async def _safe_send(self, player: Player, payload: Dict):
-        if player.ws.client_state.name == "CONNECTED":
+        if player.ws.application_state is not WebSocketState.DISCONNECTED:
             with suppress(RuntimeError):
                 await player.ws.send_json(payload)
 
