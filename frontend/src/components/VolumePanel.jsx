@@ -5,8 +5,8 @@ import { useAudio } from '../audio/AudioProvider';
 export default function VolumePanel() {
   const { volume, setVolume } = useAudio();
 
-  // Remember last non-zero level so we can restore it after un-muting
-  const lastVolRef = useRef(volume || 0.2);
+  // Remember last volume level
+  const lastVolRef = useRef(volume || 0);
 
   const toggleMute = () => {
     if (volume === 0) {
