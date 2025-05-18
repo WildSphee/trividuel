@@ -4,55 +4,67 @@ import { Howl } from 'howler';
 const AudioContext = createContext(null);
 
 export function AudioProvider({ children }) {
-  // restore user-saved volume or fall back to 50 %
-  const [volume, setVolume] = useState(() => {
-    const v = localStorage.getItem('bgm-volume');
-    return v !== null ? Number(v) : 0.5;
-  });
-
-  const bgmRef = useRef(null);
-
-  useEffect(() => {
-    bgmRef.current = new Howl({
-      src: ['/public/audio/bgm'],
-      loop: true,
-      volume,
-      html5: true          // stream long tracks, keeps bundle light
+    const [volume, setVolume] = useState(() => {
+        const v = localStorage.getItem('bgm-volume');
+        // default volume is on mute :')
+        return v !== null ? Number(v) : 0;
     });
 
-    // try to autoplay after the *first* user gesture (Chrome / Safari rule)
-    const tryPlay = () => {
-      const sound = bgmRef.current;
-      if (!sound) return;
+    const bgmRef = useRef(null);
 
-      const id = sound.play();
-      sound.once('playerror', () => {
-        sound.once('unlock', () => sound.play(id));
-      });
+    useEffect(() => {
+        bgmRef.current = new Howl({
+            src: ['/audio/bgm.mp3'],
+            loop: true,
+            volume,
+            html5: true
+        });
 
-      window.removeEventListener('pointerdown', tryPlay);
-    };
+        // try to autoplay after the *first* user gesture (Chrome / Safari rule)
+        const tryPlay = () => {
+            const sound = bgmRef.current;
+            if (!sound) return;
 
-    window.addEventListener('pointerdown', tryPlay, { once: true });
+            const id = sound.play();
+            sound.once('playerror', () => {
+                sound.once('unlock', () => sound.play(id));
+            });
 
-    return () => bgmRef.current?.unload();
-  }, []);
+            window.removeEventListener('pointerdown', tryPlay);
+        };
 
-  // keep Howler + localStorage in sync when the user moves the slider
-  useEffect(() => {
-    bgmRef.current?.volume(volume);
-    localStorage.setItem('bgm-volume', String(volume));
-  }, [volume]);
+        window.addEventListener('pointerdown', tryPlay, { once: true });
 
-  return (
-    <AudioContext.Provider value={{ volume, setVolume }}>
-      {children}
-    </AudioContext.Provider>
-  );
+        return () => bgmRef.current?.unload();
+    }, []);
+
+    useEffect(() => {
+        const s = bgmRef.current;
+        if (!s) return;
+
+        if (volume === 0) {
+            s.pause();
+            // Optional: tell the browser the session is inactive
+            if ('mediaSession' in navigator)
+                navigator.mediaSession.playbackState = 'none';
+        } else {
+            s.volume(volume);
+            if (!s.playing()) s.play();
+            if ('mediaSession' in navigator)
+                navigator.mediaSession.playbackState = 'playing';
+        }
+        localStorage.setItem('bgm-volume', String(volume));
+    }, [volume]);
+
+    return (
+        <AudioContext.Provider value={{ volume, setVolume }}>
+            {children}
+        </AudioContext.Provider>
+    );
 }
 
 export function useAudio() {
-  const ctx = useContext(AudioContext);
-  if (!ctx) throw new Error('useAudio must be used inside <AudioProvider>');
-  return ctx;
+    const ctx = useContext(AudioContext);
+    if (!ctx) throw new Error('useAudio must be used inside <AudioProvider>');
+    return ctx;
 }
