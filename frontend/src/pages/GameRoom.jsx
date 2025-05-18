@@ -9,7 +9,7 @@ import GameTopBar from "@/components/GameTopBar";
 import FlashPulse from "@/components/FlashPulse";
 
 export default function GameRoom() {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const auth = getAuth();
   const me = auth.currentUser?.uid;
 
@@ -102,7 +102,7 @@ export default function GameRoom() {
 
         if (!socket) {
           toast.error("Game lost socket, redirecting back to game");
-          nav("/game", { replace: true });
+          navigate("/game", { replace: true });
           return;
         }
 
@@ -110,8 +110,8 @@ export default function GameRoom() {
         socket.addEventListener("message", handleMessage);
       } catch (err) {
         console.error(err);
-        toast.error("Could not open game socket");
-        nav("/game", { replace: true });
+        toast.error("Connection to Server Interrupted");
+        navigate("/game", { replace: true });
       }
     })();
 
@@ -119,7 +119,7 @@ export default function GameRoom() {
     return () => {
       if (socket) socket.removeEventListener("message", handleMessage);
     };
-  }, [me, auth, nav]);
+  }, [me, auth, navigate]);
 
   function sendAnswer(idx) {
     if (answered || !wsRef.current) return;
@@ -129,7 +129,7 @@ export default function GameRoom() {
 
   if (!question) {
     return (
-      <VSScreen payload={data} myUid={auth.currentUser.uid} />
+      <VSScreen payload={data} myUid={auth.currentUser?.uid} />
     );
   }
 
