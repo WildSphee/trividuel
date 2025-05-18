@@ -57,9 +57,8 @@ export default function UserCard({
 
   const flagUrl = useMemo(() => {
     if (!country) return null;
-    if (country.toUpperCase() === "DEV") {
-      return "/devflag.svg";
-    }
+    if (country.toUpperCase() === "DEV") return "/flags/devflag.svg";
+    if (country.toUpperCase() === "IDK") return "/flags/idkflag.svg";
     return `https://flagcdn.com/${country.toLowerCase()}.svg`;
   }, [country]);
 

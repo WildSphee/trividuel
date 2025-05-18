@@ -52,7 +52,7 @@ export default function LeaderboardPanel({ currentPlayer }) {
             >
               {/* header */}
               <header className="leaderboard-header">
-                <h2 className="leaderboard-title">Leaderboard</h2>
+                <h2 className="leaderboard-title font-block">Leaderboard</h2>
                 <button className="leaderboard-close" onClick={() => setOpen(false)}>
                   <X className="w-5 h-5" />
                 </button>
@@ -61,13 +61,13 @@ export default function LeaderboardPanel({ currentPlayer }) {
               {/* tabs */}
               <nav className="leaderboard-tabs">
                 <button
-                  className={`leaderboard-tab ${activeTab === "global" ? "active" : ""}`}
+                  className={`leaderboard-tab ${activeTab === "global" ? "active" : ""} font-block`}
                   onClick={() => setActive("global")}
                 >
                   Global
                 </button>
                 <button
-                  className={`leaderboard-tab ${activeTab === "regional" ? "active" : ""}`}
+                  className={`leaderboard-tab ${activeTab === "regional" ? "active" : ""} font-block`}
                   onClick={() => setActive("regional")}
                 >
                   {data?.region || "Regional"}
@@ -132,11 +132,11 @@ function LeaderboardRow({ rank, display_name, total_won, elo, country, highlight
   const flagUrl = useFlagUrl(country);
   return (
     <div className={`leaderboard-row ${highlight ? "highlight" : ""}`}>
-      <span className="rank-col">{rank}</span>
-      <span className="name-col">{display_name}</span>
-      <span className="wins-col">{total_won ?? "-"}</span>
-      <span className="elo-col">
-        {elo}
+      <span className="rank-col font-comic">{rank}</span>
+      <span className="name-col font-bubble">{display_name}</span>
+      <span className="wins-col font-comic">🏆{total_won ?? "-"}</span>
+      <span className="elo-col font-comic">{elo}</span>
+      <span className="flag-col">
         {showCountry && flagUrl && (
           <img src={flagUrl} alt={`${country} flag`} />
         )}
@@ -160,7 +160,8 @@ function SkeletonList() {
 function useFlagUrl(country) {
   return useMemo(() => {
     if (!country) return null;
-    if (country.toUpperCase() === "DEV") return "/devflag.svg";
+    if (country.toUpperCase() === "DEV") return "/flags/devflag.svg";
+    if (country.toUpperCase() === "IDK") return "/flags/idkflag.svg";
     return `https://flagcdn.com/${country.toLowerCase()}.svg`;
   }, [country]);
 }
