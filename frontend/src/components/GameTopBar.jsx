@@ -1,8 +1,5 @@
 import CountdownTimer from "@/components/Timer";
 import LifeCard from "@/components/LifeCard";
-import CountdownTimerBadge   from "@/components/timers/CountdownTimerBadge";
-import CountdownTimerOutline from "@/components/timers/CountdownTimerOutline";
-import CountdownTimerFlip    from "@/components/timers/CountdownTimerFlip";
 
 /**
  * Top bar that shows each player’s life and a central countdown timer.

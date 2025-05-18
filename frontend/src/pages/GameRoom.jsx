@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { getMatchSocket } from "@/api/ws";
-import CountdownTimer from "@/components/Timer";
-import LifeCard from "@/components/LifeCard";
 import VSScreen from "@/components/VSScreen";
 import ChoiceButton from "@/components/ChoiceButton";
 import GameTopBar from "@/components/GameTopBar";
+import FlashPulse from "@/components/FlashPulse";
 
 export default function GameRoom() {
   const nav = useNavigate();
@@ -18,9 +17,10 @@ export default function GameRoom() {
   const [question, setQuestion] = useState(null);
   const [lifes, setLifes] = useState({});
   const [data, setData] = useState({});
-  const [answered, setAnswered] = useState(false);
 
+  const [answered, setAnswered] = useState(false);
   const [questionTimeout, setQuestionTimeout] = useState(0);
+  const [flash, setFlash] = useState(null);
 
   const { myLife, opponentLife } = useMemo(() => {
     const entries = Object.entries(lifes);
@@ -62,6 +62,13 @@ export default function GameRoom() {
           // to hide the timer
           setAnswered(true);
           const ok = extra.answers[me] === extra.correct;
+          setFlash({
+            color: ok ? "green" : "red",
+            intensity: 0.3,      // 0-1
+            innerGap: 0.3,    // 0 = no gap
+            coverage: 1,      // still usable
+            duration: 700,
+          });
           if (ok) {
             toast.success("Correct 🎉");
           } else {
@@ -128,6 +135,12 @@ export default function GameRoom() {
 
   return (
     <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
+      {flash && (
+        <FlashPulse
+          {...flash}
+          onDone={() => setFlash(null)}
+        />
+      )}
       {/* Names + lifes + timer */}
       <GameTopBar
         myLifeEntry={myLife}

@@ -4,7 +4,7 @@ export default function ChoiceButton({ text, onClick, disabled, color, hoverColo
       onClick={onClick}
       disabled={disabled}
       className={`font-comic text-gray-700 pixel-choice-button w-full bg-${color}-500 hover:bg-${hoverColor}-400 
-        disabled:opacity-50 transition-all text-[1.25rem] py-[3rem]`}
+        disabled:opacity-50 transition-all text-[1.25rem] py-[3rem] z-40`}
     >
       {text}
     </button>

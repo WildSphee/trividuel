@@ -101,7 +101,7 @@ export default function LeaderboardPanel({ currentPlayer }) {
               </div>
 
               {/* footer */}
-              <footer className="leaderboard-footer">
+              <footer className="leaderboard-footer font-comic italic">
                 {data
                   ? `Refreshed ${data.last_update} minute${data.last_update === 1 ? "" : "s"} ago`
                   : "Fetching…"}
