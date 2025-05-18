@@ -5,5 +5,6 @@
 @import "./leaderboard.css";
 @import "./sound.css";
 @import "./gametopbar.css";
+@import "./gameendscreen.css";
 
 @import "tailwindcss";

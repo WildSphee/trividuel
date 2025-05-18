@@ -30,7 +30,6 @@ export default function Game() {
       const sid = payload.extra?.session_id;
       if (sid) nav(`/room/${sid}`, { replace: true });
     },
-    () => nav("/game")
   );
 
   if (!me) {

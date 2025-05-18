@@ -8,8 +8,8 @@ from fastapi import APIRouter, Depends, Request
 from app.db import db
 from app.dependencies.auth import get_current_user
 from app.routers.player import extract_client_ip
-from app.utils.country_search import find_country_by_ip
 from app.schemas import player_manager
+from app.utils.country_search import find_country_by_ip
 
 router = APIRouter(
     tags=["info"],

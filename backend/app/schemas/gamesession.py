@@ -10,11 +10,11 @@ from starlette.websockets import WebSocketState
 from app.db import create_doc_ref
 from app.schemas.players import Player
 from app.utils.elo import elo_calculation
-from app.utils.prepare_questions import get_random_questions
+from app.utils.prepare_questions import Question, get_random_questions
 
 
 class GameSession:
-    PLAYER_STARTING_LIFE = 3
+    PLAYER_STARTING_LIFE = 1
     START_GAME_DELAY = 3
     QUESTION_TIMEOUT = 30
     REVEAL_TIME = 3
@@ -26,8 +26,9 @@ class GameSession:
         for p in self.players:
             p.session_id = self.id
 
-        self.questions = get_random_questions(self.QUESTION_COUNT)
-        self.current_index = -1
+        self.questions: List[Question] = get_random_questions(self.QUESTION_COUNT)
+        self.ans_his: List[Dict] = []
+        self.current_index: int = -1
         self.db = db
         self.timer_task: Optional[asyncio.Task] = None
 
@@ -133,6 +134,16 @@ class GameSession:
             "lifes": {p.uid: [p.name, p.lifes] for p in self.players},
         }
         await self.broadcast({"type": "game", "message": "reveal", "extra": extra})
+        self.ans_his.append(
+            {
+                "index": self.current_index,
+                "question:": q.question,
+                "correct_ans": q.choices[correct],
+                "player_correct": {
+                    p.uid: p.current_answer == correct for p in self.players
+                },
+            }
+        )
 
         # determine if someone lost
         losers = [p for p in self.players if p.lifes <= 0]
@@ -181,7 +192,11 @@ class GameSession:
                 {
                     "type": "game",
                     "message": "end",
-                    "extra": {"winner": None, "reason": "tie in life"},
+                    "extra": {
+                        "winner": None,
+                        "reason": "tie in life",
+                        "questions": self.ans_his,
+                    },
                 }
             )
             await self._cleanup_states()
@@ -194,7 +209,11 @@ class GameSession:
             {
                 "type": "game",
                 "message": "end",
-                "extra": {"winner": winner.uid, "reason": reason},
+                "extra": {
+                    "winner": winner.uid,
+                    "reason": reason,
+                    "questions": self.ans_his,
+                },
             }
         )
         await self._record_result(winner, loser)

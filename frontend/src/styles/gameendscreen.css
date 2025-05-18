@@ -1,0 +1,8 @@
+/* Pixel-frame container */
+.pixel-panel {
+  border: 3px solid #000;
+  box-shadow: -2px 2px 0 #000, -5px 5px 0 #000;
+  border-radius: 0;
+  background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+  image-rendering: pixelated;
+}

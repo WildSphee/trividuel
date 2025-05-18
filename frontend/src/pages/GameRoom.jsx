@@ -7,6 +7,8 @@ import VSScreen from "@/components/VSScreen";
 import ChoiceButton from "@/components/ChoiceButton";
 import GameTopBar from "@/components/GameTopBar";
 import FlashPulse from "@/components/FlashPulse";
+import GameEndScreen from "@/components/GameEndScreen";
+
 
 export default function GameRoom() {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export default function GameRoom() {
   const [answered, setAnswered] = useState(false);
   const [questionTimeout, setQuestionTimeout] = useState(0);
   const [flash, setFlash] = useState(null);
+  const [endPayload, setEndPayload] = useState(null);
 
   const { myLife, opponentLife } = useMemo(() => {
     const entries = Object.entries(lifes);
@@ -88,11 +91,14 @@ export default function GameRoom() {
             );
           }
 
+          setEndPayload(extra);
           break;
         }
 
+        case "zombie": break;
+
         default:
-          console.log("WS →", data);
+          console.log("Unexpected message →", data);
       }
     };
 
@@ -127,12 +133,25 @@ export default function GameRoom() {
     setAnswered(true);
   }
 
+
+  // on game start
   if (!question) {
     return (
       <VSScreen payload={data} myUid={auth.currentUser?.uid} />
     );
   }
-
+  // on game end
+  if (endPayload) {
+    return (
+      <GameEndScreen
+        playerData={data}
+        myUid={me}
+        questions={endPayload.questions}
+        isWinner={endPayload.winner === me}
+      />
+    );
+  }
+  // during game
   return (
     <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
       {flash && (

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { getMatchSocket, clearMatchSocket } from "@/api/ws";
 
 
-export default function useMatchmaking(onGameStart, onMatchWin) {
+export default function useMatchmaking(onGameStart) {
   const socketRef = useRef(null);
   const [status, setStatus] = useState("idle");            // idle | queueing | playing
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
 
       setStatus("queueing");
 
-      ws.onopen = () => console.log("WS open");
+      ws.onopen;
 
       ws.onmessage = (ev) => {
         const data = JSON.parse(ev.data);
@@ -43,12 +43,12 @@ export default function useMatchmaking(onGameStart, onMatchWin) {
 
             if (message === "end") {
               setStatus("idle");
-              onMatchWin?.(data);
-              ws.close();
               return;
             }
             break;
+
           }
+          case "zombie": break;
 
           default:
             console.log("WS →", data);
