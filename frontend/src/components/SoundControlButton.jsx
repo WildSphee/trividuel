@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import VolumePanel from './VolumePanel';
+import { useAudio } from '../audio/AudioProvider';
 
 
 export default function SoundControlButton() {
   const [open, setOpen] = useState(false);
+  const { volume } = useAudio();
 
   useEffect(() => {
     if (!open) return;
@@ -16,9 +18,9 @@ export default function SoundControlButton() {
   return (
     <>
       <button className="sound-launch" onClick={() => setOpen((o) => !o)}>
-        <Volume2
-          className={`w-7 h-7 text-white`}
-        />
+        {volume === 0
+          ? <VolumeX className="w-7 h-7 text-white" />
+          : <Volume2 className="w-7 h-7 text-white" />}
       </button>
 
       {open && <VolumePanel />}

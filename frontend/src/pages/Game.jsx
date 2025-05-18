@@ -59,7 +59,7 @@ export default function Game() {
         <SoundControlButton />
       </div>
 
-      <div className="p-8 flex flex-col items-center gap-12">
+      <div className="p-12 flex flex-col items-center gap-12">
         <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
 
         <UserCard
