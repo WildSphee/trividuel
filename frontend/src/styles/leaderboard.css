@@ -1,17 +1,10 @@
-/* ────────────────────────────────────────────────
-   Leaderboard – pixel‑art CSS bundle
-   ------------------------------------------------
-   Fonts
-     .font-bubble – player names
-     .font-comic  – misc text
-   ------------------------------------------------ */
-
 /* ========== Overlay & Modal ========== */
 .leaderboard-overlay {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: transparent; /* no blur */
+  background: transparent;
+  /* no blur */
 }
 
 .leaderboard-modal {
@@ -26,21 +19,25 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-@media (max-width: 640px) { /* Mobile */
+@media (max-width: 640px) {
+
+  /* Mobile */
   .leaderboard-modal {
     width: 90vw;
     height: 90vh;
     top: 5vh;
-    left: 5vw;
+    right: 5vw;
   }
 }
 
-@media (min-width: 641px) { /* Desktop */
+@media (min-width: 641px) {
+
+  /* Desktop */
   .leaderboard-modal {
     width: 24rem;
     max-height: calc(100vh - 8rem);
-    top: 4rem;
-    left: 2rem;
+    top: 6rem;
+    right: 2rem;
   }
 }
 
@@ -51,18 +48,17 @@
 
 /* ========== Header ========== */
 .leaderboard-header {
-  background: #4f46e5; /* indigo-600 */
+  background: #df7b23;
   color: #fff;
   padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: "font-comic", sans-serif;
   border-bottom: 2px solid #000;
 }
 
 .leaderboard-title {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 
@@ -78,7 +74,6 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0;
-  font-family: "font-comic", sans-serif;
 }
 
 .leaderboard-tab {
@@ -88,13 +83,15 @@
   border: 2px solid #000;
   box-shadow: -2px 2px 0 #000, -4px 4px 0 #000;
   border-radius: 0;
-  background: #e2e8f0; /* slate-200 */
+  background: #e2e8f0;
+  /* slate-200 */
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.1s;
 }
 
 .leaderboard-tab.active {
-  background: #cbd5e1; /* slate-300 */
+  background: #cbd5e1;
+  /* slate-300 */
 }
 
 .leaderboard-tab:hover {
@@ -111,35 +108,44 @@
 .leaderboard-row,
 .leaderboard-skeleton {
   display: grid;
-  grid-template-columns: 2.5rem 1fr 3.5rem 4.5rem;
+  grid-template-columns: 2.5rem 1fr 3.5rem 4.5rem 2rem;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-bottom: 1px solid #000;
-  font-family: "font-comic", sans-serif;
 }
 
 .leaderboard-row.highlight {
-  background: #fef08a; /* yellow-100 */
+  background: #fef08a;
+  /* yellow-100 */
 }
 
-.rank-col { text-align: center; font-weight: 600; }
+.rank-col {
+  text-align: center;
+  font-weight: 600;
+}
+
 .name-col {
-  font-family: "font-bubble", sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 1.2rem;
 }
-.wins-col, .elo-col { text-align: center; }
 
-.elo-col img {
+.wins-col,
+.elo-col {
+  text-align: center;
+}
+
+.flag-col img {
   margin-left: 0.25rem;
-  width: 1.25rem;
-  height: 0.75rem;
+  width: 2rem;
+  height: 1.2rem;
   object-fit: cover;
-  border: 0.5px solid #000;
-  box-shadow: -0.5px 0.5px 0 #000;
   image-rendering: pixelated;
+  border: 0.5px solid #000;
+  box-shadow: -0.5px 0.5px 0px #000;
+  border-radius: 0;
 }
 
 /* ========== Skeleton loader ========== */
@@ -156,15 +162,22 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 /* ========== Footer ========== */
 .leaderboard-footer {
-  font-family: "font-comic", sans-serif;
   font-size: 0.75rem;
-  color: #64748b; /* slate-500 */
+  color: #64748b;
+  /* slate-500 */
   text-align: center;
   padding: 0.5rem 0.75rem;
   border-top: 1px solid #000;
@@ -174,7 +187,7 @@
 .leaderboard-launch {
   width: 4rem;
   height: 4rem;
-  background: #4f46e5;
+  background: #df7b23;
   border: 3px solid #000;
   box-shadow: -3px 3px 0 #000, -6px 6px 0 #000;
   border-radius: 0;
@@ -186,7 +199,7 @@
 }
 
 .leaderboard-launch:hover {
-  background: #6366f1;
+  background: #b7641b;
   box-shadow: -4px 4px 0 #000, -7px 7px 0 #000;
   transform: scale(1.04);
 }

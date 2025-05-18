@@ -52,8 +52,12 @@ export default function Game() {
         scaleRange={[0.3, 0.5]}
         seed={me.uid}
       />
-      <div className="p-8 flex flex-col items-center gap-12">
+      {/* ─── Leaderboard – fixed button (expands internally) ── */}
+      <div className="fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
         <LeaderboardPanel currentPlayer={me} />
+      </div>
+
+      <div className="p-8 flex flex-col items-center gap-12">
         <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
 
         <UserCard
