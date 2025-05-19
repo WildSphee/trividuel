@@ -5,7 +5,7 @@ import useMatchmaking from "@/hooks/useMatchmaking";
 import { useNavigate } from "react-router-dom";
 import Loader from "@/components/Loader";
 import StartButton from "@/components/StartButton";
-import PixelSkyBackground from "@/components/PixelSkyBackground";
+import PixelSkyBackground from "@/components/backgrounds/PixelSkyBackground";
 import LeaderboardPanel from "@/components/LeaderboardPanel";
 import SoundControlButton from "../components/SoundControlButton";
 

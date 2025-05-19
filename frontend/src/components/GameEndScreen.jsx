@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import UserCard from "@/components/UserCard";
 import { CheckCircle, XCircle } from "lucide-react";
+import SlidingBackground from "@/components/backgrounds/SlidingBackground";
 
 /**
  * GameEndScreen
@@ -24,7 +25,10 @@ export default function GameEndScreen({ playerData, myUid, questions, isWinner }
     const qText = (obj) => obj.question ?? obj["question:"] ?? "—";
 
     return (
-        <div className="min-h-screen flex flex-col sm:flex-row gap-4 p-4 sm:p-6 bg-slate-50">
+        <>
+        <SlidingBackground />
+        <div className="relative z-10 min-h-screen flex flex-col sm:flex-row gap-4
+                p-4 sm:p-6">
             {/* ── user panel ─────────────────────────────────────────── */}
             <div className="sm:w-1/3 w-full">
                 <div className="pixel-panel p-4 h-full">
@@ -83,6 +87,6 @@ export default function GameEndScreen({ playerData, myUid, questions, isWinner }
                     Back to Lobby
                 </button>
             </div>
-        </div>
+        </div></>
     );
 }

@@ -1,4 +1,4 @@
-import PixelSkyBackground from "@/components/PixelSkyBackground";
+import PixelSkyBackground from "@/components/backgrounds/PixelSkyBackground";
 
 export default function NotFound() {
   return (

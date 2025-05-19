@@ -1,4 +1,5 @@
 import UserCard from "@/components/UserCard";
+import StripesBackground from "@/components/backgrounds/StripesBackground";
 
 export default function VSScreen({ payload, myUid, size = "lg", className = "" }) {
   if (!payload?.extra?.players || !payload?.extra?.lifes) return null;
@@ -20,12 +21,7 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
       `}
     >
       {/* SPINNING STRIPES */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <div className="min-w-[200vw] min-h-[200vh] animate-spotlight-spin
-                        bg-[repeating-conic-gradient(black_0deg,black_10deg,white_10deg,white_20deg)]
-                        opacity-20 rounded-full mask-hole" />
-      </div>
-
+      <StripesBackground />
       {/* ME (left on desktop → bottom on mobile) */}
       <div className="animate-fade-pop-delay-1 opacity-0 sm:scale-100 scale-90">
         <UserCard

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import PixelSkyBackground from "@/components/PixelSkyBackground";
+import PixelSkyBackground from "@/components/backgrounds/PixelSkyBackground";
 
 export default function Login() {
   const { loginGoogle, loginGithub, user } = useAuth();
