@@ -8,7 +8,7 @@ import ChoiceButton from "@/components/ChoiceButton";
 import GameTopBar from "@/components/GameTopBar";
 import FlashPulse from "@/components/FlashPulse";
 import GameEndScreen from "@/components/GameEndScreen";
-
+import GridBackground from "@/components/backgrounds/GridBackground";
 
 export default function GameRoom() {
   const navigate = useNavigate();
@@ -153,47 +153,50 @@ export default function GameRoom() {
   }
   // during game
   return (
-    <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
-      {flash && (
-        <FlashPulse
-          {...flash}
-          onDone={() => setFlash(null)}
-        />
-      )}
-      {/* Names + lifes + timer */}
-      <GameTopBar
-        myLifeEntry={myLife}
-        opponentLifeEntry={opponentLife}
-        answered={answered}
-        questionTimeout={questionTimeout}
-        questionIndex={question.index}
-      />
-
-      {/* Question */}
-      <h2 className=" font-bubble mb-4 sm:mb-10 text-[clamp(1.5rem,4.8vw,2rem)] leading-tight break-words line-clamp-4 animate-fade-pop-quick">
-        {question.question}
-      </h2>
-
-      {/* Choice buttons */}
-      <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
-        {question.choices.map((c, i) => (
-          <ChoiceButton
-            key={i}
-            text={c}
-            onClick={() => sendAnswer(i)}
-            disabled={answered}
-            color={colours[i % colours.length]}
-            hoverColor={colours[i % colours.length]}
+    <>
+      <GridBackground />
+      <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
+        {flash && (
+          <FlashPulse
+            {...flash}
+            onDone={() => setFlash(null)}
           />
-        ))}
-      </div>
+        )}
+        {/* Names + lifes + timer */}
+        <GameTopBar
+          myLifeEntry={myLife}
+          opponentLifeEntry={opponentLife}
+          answered={answered}
+          questionTimeout={questionTimeout}
+          questionIndex={question.index}
+        />
 
-      {/* waiting text */}
-      {answered && (
-        <p className="font-comic italic text-gray-500 text-base sm:text-lg mt-auto pt-6">
-          Waiting for opponent…
-        </p>
-      )}
-    </div>
+        {/* Question */}
+        <h2 className=" font-bubble mb-4 sm:mb-10 text-[clamp(1.5rem,4.8vw,2rem)] leading-tight break-words line-clamp-4 animate-fade-pop-quick">
+          {question.question}
+        </h2>
+
+        {/* Choice buttons */}
+        <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
+          {question.choices.map((c, i) => (
+            <ChoiceButton
+              key={i}
+              text={c}
+              onClick={() => sendAnswer(i)}
+              disabled={answered}
+              color={colours[i % colours.length]}
+              hoverColor={colours[i % colours.length]}
+            />
+          ))}
+        </div>
+
+        {/* waiting text */}
+        {answered && (
+          <p className="font-comic italic text-gray-500 text-base sm:text-lg mt-auto pt-6">
+            Waiting for opponent…
+          </p>
+        )}
+      </div>
+    </>
   )
 }

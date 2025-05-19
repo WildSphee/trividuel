@@ -63,3 +63,87 @@
   80%  { opacity: 0; }
   100% { opacity: 0; }
 }
+
+
+.sliding-bg {
+  animation:slide 5s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #6c3 50%, #09f 50%);
+  bottom:0;
+  left:-50%;
+  opacity:.5;
+  position:fixed;
+  right:-50%;
+  top:0;
+  position: fixed;
+  z-index:0;
+}
+
+.bg2 {
+  animation-direction:alternate-reverse;
+  animation-duration:6s;
+}
+
+.bg3 {
+  animation-duration:8s;
+}
+
+@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
+}
+
+/* GRID BACKGROUND */
+@property --line-step {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 280px;
+}
+@property --grid-weight {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 20px;
+}
+
+/* =========  Theme variables  ========= */
+/* Putting them on :root makes them available anywhere in the app.              */
+/* If you only need them inside .space-grid-bg you can copy them there instead. */
+:root {
+  --line-step: 180px;    /* distance between grid lines          */
+  --grid-weight: 20px;   /* thickness of each grid line          */
+  --line-color: #ffffff; /* grid colour                          */
+}
+
+/* =========  Grid background component  ========= */
+.space-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  /* radial sky behind the two grid layers */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--line-step) - var(--grid-weight)),
+      var(--line-color) calc(var(--line-step) - var(--grid-weight)) var(--line-step)
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(var(--line-step) - var(--grid-weight)),
+      var(--line-color) calc(var(--line-step) - var(--grid-weight)) var(--line-step)
+    ),
+    radial-gradient(ellipse at bottom, #d2fff19a 0%, #e1e5ff89 100%);
+
+  /* animate the size of the squares */
+  animation: grid-pulse 120s ease-in-out infinite;
+}
+
+/* The grid gradually “breathes” between two sizes   */
+@keyframes grid-pulse {
+  0%, 100% { --line-step: 180px; --grid-weight: 0px; }
+  50%      { --line-step: 120px; --grid-weight: 30px; }
+}
