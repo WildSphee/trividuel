@@ -54,8 +54,8 @@ export default function Game() {
       <PixelSkyBackground
         items={[
           { src: "/pixelskybackground/cloud1.png", count: 2 },
-          { src: "/pixelskybackground/cloud2.png", count: 2 },
-          { src: "/pixelskybackground/cloud3.png", count: 2 },
+          { src: "/pixelskybackground/cloud2.png", count: 3 },
+          { src: "/pixelskybackground/cloud3.png", count: 3 },
           { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
           { src: "/pixelskybackground/birds.png", count: 1 }
         ]}
