@@ -9,32 +9,45 @@ import PixelSkyBackground from "@/components/PixelSkyBackground";
 import LeaderboardPanel from "@/components/LeaderboardPanel";
 import SoundControlButton from "../components/SoundControlButton";
 
-
 export default function Game() {
   const nav = useNavigate();
 
-  /** ─── player profile ─────────────────────────────── */
+  /* player profile */
   const [me, setMe] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const fetchMe = async () => {
-    const data = await getMe();
-    setMe(data);
-  };
+  /* always call your hooks in the same order */
+  const { status, queue } = useMatchmaking(payload => {
+    const sid = payload.extra?.session_id;
+    if (sid) nav(`/room/${sid}`, { replace: true });
+  });
 
   useEffect(() => {
-    fetchMe();
-  }, []);
+    let cancelled = false;
 
-  const { status, queue } = useMatchmaking(
-    (payload) => {
-      const sid = payload.extra?.session_id;
-      if (sid) nav(`/room/${sid}`, { replace: true });
-    },
-  );
+    (async () => {
+      try {
+        const data = await getMe();
+        if (cancelled) return;
 
-  if (!me) {
-    return <Loader />;
-  }
+        if (!data) {                 // unauth -> go to login 
+          nav("/", { replace: true });
+        } else {
+          setMe(data);               // logged in -> store profile
+        }
+      } catch (err) {
+        nav("/", { replace: true });  // network / 401
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => { cancelled = true };
+  }, [nav]);
+
+  if (loading) return <Loader />;
+
+  if (!me) return null;
 
   return (
     <>
@@ -52,6 +65,7 @@ export default function Game() {
         scaleRange={[0.3, 0.5]}
         seed={me.uid}
       />
+
       {/* ─── Leaderboard – fixed button (expands internally) ── */}
       <div className="flex flex-col gap-4 fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
         <LeaderboardPanel currentPlayer={me} />
@@ -59,7 +73,9 @@ export default function Game() {
       </div>
 
       <div className="p-12 flex flex-col items-center gap-12">
-        <h1 className="font-block text-5xl font-semibold mb-5"> Game Lobby</h1>
+        <h1 className="font-block text-5xl font-semibold mb-5">
+          Game Lobby
+        </h1>
 
         <UserCard
           name={me.display_name}
@@ -67,24 +83,13 @@ export default function Game() {
           type={me.type}
           country={me.country}
           total_won={me.total_won}
-          showChangeTypeButton={true}
-          onTypeChanged={fetchMe}
+          showChangeTypeButton
+          onTypeChanged={async () => setMe(await getMe())}
         />
 
-        {status === "idle" && (
-          <StartButton
-            onClick={queue}
-            children={"Find Opponent"}
-          />
-        )}
-
-        {status === "queueing" && (
-          <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>
-        )}
-
-        {status === "playing" && (
-          <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>
-        )}
+        {status === "idle" && <StartButton onClick={queue}>Find Opponent</StartButton>}
+        {status === "queueing" && <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>}
+        {status === "playing" && <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>}
       </div>
     </>
   );
