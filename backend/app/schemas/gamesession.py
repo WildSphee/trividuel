@@ -14,9 +14,9 @@ from app.utils.prepare_questions import Question, get_random_questions
 
 
 class GameSession:
-    PLAYER_STARTING_LIFE = 1
+    PLAYER_STARTING_LIFE = 3
     START_GAME_DELAY = 3
-    QUESTION_TIMEOUT = 30
+    QUESTION_TIMEOUT = 20
     REVEAL_TIME = 3
     QUESTION_COUNT = 5
 
@@ -163,6 +163,7 @@ class GameSession:
                 "extra": {
                     "winner": next(p.uid for p in self.players if p.uid != leaver_uid),
                     "reason": "opponent_left",
+                    "questions": self.ans_his,
                 },
             }
         )
