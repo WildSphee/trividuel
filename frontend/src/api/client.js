@@ -25,7 +25,7 @@ async function getIdTokenSafe(force = false) {
 
 /* ── 3.  axios instance with the two interceptors you already had ─────── */
 const client = axios.create({
-  baseURL: `http://${import.meta.env.BACKEND_IP}`,
+  baseURL: `http://23.98.93.88:5678`,
   timeout: 5000,
 });
 
