@@ -2,14 +2,14 @@ import axios from "axios";
 import { auth } from "@/firebase";
 
 /* ── 1.  wait until Firebase knows whether a user is signed in ────────── */
-let authReady;                       // cached promise
+let authReady; // cached promise
 
 function waitForAuth() {
-  if (authReady) return authReady;   // reuse the same promise
+  if (authReady) return authReady;
 
   authReady = new Promise((resolve) => {
     const unsub = auth.onAuthStateChanged(() => {
-      unsub();                       // 1-shot listener
+      unsub(); // 1-shot listener
       resolve();
     });
   });
@@ -31,7 +31,7 @@ const client = axios.create({
 
 /* attach ?token=… */
 client.interceptors.request.use(async (config) => {
-  const token = await getIdTokenSafe();     // now guaranteed after auth
+  const token = await getIdTokenSafe();
   if (token) {
     config.params = { ...(config.params || {}), token };
   }
@@ -42,13 +42,10 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (res) => res,
   async (error) => {
-    if (
-      error.response?.status === 401 &&
-      !error.config.__isRetry
-    ) {
+    if (error.response?.status === 401 && !error.config.__isRetry) {
       error.config.__isRetry = true;
-      await getIdTokenSafe(true);            // force refresh
-      return client(error.config);           // replay request
+      await getIdTokenSafe(true); // force refresh
+      return client(error.config); // replay request
     }
     return Promise.reject(error);
   }

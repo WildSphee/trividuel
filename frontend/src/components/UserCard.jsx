@@ -18,7 +18,7 @@ export default function UserCard({
   country = "",
   size = "lg",
   showChangeTypeButton = false,
-  onTypeChanged = () => { },
+  onTypeChanged = () => {},
   flipAvatar = false,
 }) {
   const [loading, setLoading] = useState(false);
@@ -83,23 +83,29 @@ export default function UserCard({
     <div
       className={`flex flex-col z-10 items-center usercard ${sizeClasses.card}`}
     >
-
       {/* Player Pic */}
       <img
         src={`/${type}.png`}
         alt="avatar"
-        className={`${sizeClasses.img} grid mb-4 object-cover ${flipAvatar ? "transform -scale-x-100" : ""
-          }`}
+        className={`${sizeClasses.img} grid mb-4 object-cover ${
+          flipAvatar ? "transform -scale-x-100" : ""
+        }`}
       />
 
       <div className="flex items-center gap-1">
         {/* Player name */}
-        <p className={`font-bubble usercard-name mb-1 ${sizeClasses.name}`}>{name}</p>
+        <p className={`font-bubble usercard-name mb-1 ${sizeClasses.name}`}>
+          {name}
+        </p>
       </div>
 
       {/* Player type with change button */}
       <div className="flex items-center gap-0.5">
-        <p className={`font-comic capitalize text-gray-700 ${sizeClasses.type}`}>{type}</p>
+        <p
+          className={`font-comic capitalize text-gray-700 ${sizeClasses.type}`}
+        >
+          {type}
+        </p>
         {showChangeTypeButton && (
           <button
             aria-label="Change type"
@@ -108,8 +114,9 @@ export default function UserCard({
             className="usercard-button"
           >
             <RotateCcw
-              className={`${sizeClasses.icon} ${spinning ? "animate-spin [animation-direction:reverse]" : ""
-                }`}
+              className={`${sizeClasses.icon} ${
+                spinning ? "animate-spin [animation-direction:reverse]" : ""
+              }`}
             />
           </button>
         )}
@@ -117,9 +124,13 @@ export default function UserCard({
 
       {/* Wins & ELO in one row */}
       <div className="flex items-center gap-4 mt-1">
-        <span className={`font-medium ${sizeClasses.meta}`}>🏆 {total_won}</span>
-        <span className={`font-comic text-gray-600 ${sizeClasses.meta}`}>ELO {elo}</span>
-      
+        <span className={`font-medium ${sizeClasses.meta}`}>
+          🏆 {total_won}
+        </span>
+        <span className={`font-comic text-gray-600 ${sizeClasses.meta}`}>
+          ELO {elo}
+        </span>
+
         {/* country flag */}
         {flagUrl && (
           <img

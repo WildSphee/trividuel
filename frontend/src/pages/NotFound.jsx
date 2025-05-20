@@ -25,15 +25,15 @@ export default function NotFound() {
             className="mx-auto mb-6 w-24 sm:w-32 md:w-36"
           />
 
-          <h1 className="font-bubble text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-          </h1>
+          <h1 className="font-bubble text-2xl sm:text-3xl md:text-4xl font-bold mb-4"></h1>
 
           {/* Body text */}
           <p className="font-comic text-gray-600 mb-4 text-sm sm:text-base">
             Oops! The page you are looking for doesn't exist.
           </p>
           <p className="font-comic text-gray-600 mb-6 text-sm sm:text-base">
-            If you think this is a mistake, feel free to contact our support team.
+            If you think this is a mistake, feel free to contact our support
+            team.
           </p>
 
           {/* Mail link */}
@@ -44,6 +44,7 @@ export default function NotFound() {
             sanguinaibot@gmail.com
           </a>
         </div>
-      </div> </>
+      </div>{" "}
+    </>
   );
 }

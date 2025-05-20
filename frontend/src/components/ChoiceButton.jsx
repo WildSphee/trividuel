@@ -1,5 +1,10 @@
-
-export default function ChoiceButton({ text, onClick, disabled, color, hoverColor }) {
+export default function ChoiceButton({
+  text,
+  onClick,
+  disabled,
+  color,
+  hoverColor,
+}) {
   return (
     <button
       onClick={onClick}

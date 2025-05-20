@@ -1,6 +1,6 @@
-import { useRef } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
-import { useAudio } from '../audio/AudioProvider';
+import { useRef } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { useAudio } from "../audio/AudioProvider";
 
 export default function VolumePanel() {
   const { volume, setVolume } = useAudio();
@@ -26,12 +26,18 @@ export default function VolumePanel() {
   return (
     <div
       className="sound-panel"
-      onPointerDown={(e) => e.stopPropagation()}   // keep clicks inside from bubbling
+      onPointerDown={(e) => e.stopPropagation()} // keep clicks inside from bubbling
     >
-      <button className="mute-btn" onClick={toggleMute} aria-label="mute / un-mute">
-        {volume === 0
-          ? <VolumeX className="w-6 h-6 text-black" />
-          : <Volume2 className="w-6 h-6 text-black" />}
+      <button
+        className="mute-btn"
+        onClick={toggleMute}
+        aria-label="mute / un-mute"
+      >
+        {volume === 0 ? (
+          <VolumeX className="w-6 h-6 text-black" />
+        ) : (
+          <Volume2 className="w-6 h-6 text-black" />
+        )}
       </button>
 
       <input

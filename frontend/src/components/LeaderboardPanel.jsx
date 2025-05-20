@@ -21,8 +21,9 @@ export default function LeaderboardPanel({ currentPlayer }) {
     }
   }, []);
 
-  useEffect(() => { if (open && !data && !loading) fetchLeaderboard(); },
-    [open, data, loading, fetchLeaderboard]);
+  useEffect(() => {
+    if (open && !data && !loading) fetchLeaderboard();
+  }, [open, data, loading, fetchLeaderboard]);
 
   useEffect(() => {
     const esc = (e) => e.key === "Escape" && setOpen(false);
@@ -42,19 +43,26 @@ export default function LeaderboardPanel({ currentPlayer }) {
         {open && (
           <motion.div
             className="leaderboard-overlay"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
           >
             <motion.div
               className="leaderboard-modal"
-              initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
+              initial={{ scale: 0.92, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.92, y: 20 }}
               transition={{ type: "spring", stiffness: 260, damping: 26 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* header */}
               <header className="leaderboard-header">
                 <h2 className="leaderboard-title font-block">Leaderboard</h2>
-                <button className="leaderboard-close" onClick={() => setOpen(false)}>
+                <button
+                  className="leaderboard-close"
+                  onClick={() => setOpen(false)}
+                >
                   <X className="w-5 h-5" />
                 </button>
               </header>
@@ -62,13 +70,17 @@ export default function LeaderboardPanel({ currentPlayer }) {
               {/* tabs */}
               <nav className="leaderboard-tabs">
                 <button
-                  className={`leaderboard-tab ${activeTab === "global" ? "active" : ""} font-block`}
+                  className={`leaderboard-tab ${
+                    activeTab === "global" ? "active" : ""
+                  } font-block`}
                   onClick={() => setActive("global")}
                 >
                   Global
                 </button>
                 <button
-                  className={`leaderboard-tab ${activeTab === "regional" ? "active" : ""} font-block`}
+                  className={`leaderboard-tab ${
+                    activeTab === "regional" ? "active" : ""
+                  } font-block`}
                   onClick={() => setActive("regional")}
                 >
                   {data?.region || "Regional"}
@@ -80,30 +92,31 @@ export default function LeaderboardPanel({ currentPlayer }) {
                 {loading ? (
                   <SkeletonList />
                 ) : (
-                  data && (
-                    activeTab === "global" ? (
-                      <LeaderboardTable
-                        entries={data.global_top10}
-                        playerRank={data.global_rank}
-                        player={currentPlayer}
-                        showCountry
-                      />
-                    ) : (
-                      <LeaderboardTable
-                        entries={data.regional_top10}
-                        playerRank={data.regional_rank}
-                        player={currentPlayer}
-                        showCountry={false}
-                      />
-                    )
-                  )
+                  data &&
+                  (activeTab === "global" ? (
+                    <LeaderboardTable
+                      entries={data.global_top10}
+                      playerRank={data.global_rank}
+                      player={currentPlayer}
+                      showCountry
+                    />
+                  ) : (
+                    <LeaderboardTable
+                      entries={data.regional_top10}
+                      playerRank={data.regional_rank}
+                      player={currentPlayer}
+                      showCountry={false}
+                    />
+                  ))
                 )}
               </div>
 
               {/* footer */}
               <footer className="leaderboard-footer font-comic italic">
                 {data
-                  ? `Refreshed ${data.last_update} minute${data.last_update === 1 ? "" : "s"} ago`
+                  ? `Refreshed ${data.last_update} minute${
+                      data.last_update === 1 ? "" : "s"
+                    } ago`
                   : "Fetching…"}
               </footer>
             </motion.div>
@@ -117,7 +130,12 @@ export default function LeaderboardPanel({ currentPlayer }) {
 /* ---------- helpers ---------- */
 
 function LeaderboardTable({ entries = [], playerRank, player, showCountry }) {
-  const rows = [...entries.map(e => ({ ...e, highlight: player && e.uid === player.uid }))];
+  const rows = [
+    ...entries.map((e) => ({
+      ...e,
+      highlight: player && e.uid === player.uid,
+    })),
+  ];
 
   // tack current player on end if not in top 10
   if (playerRank && player && playerRank > 10) {
@@ -129,7 +147,15 @@ function LeaderboardTable({ entries = [], playerRank, player, showCountry }) {
   ));
 }
 
-function LeaderboardRow({ rank, display_name, total_won, elo, country, highlight, showCountry }) {
+function LeaderboardRow({
+  rank,
+  display_name,
+  total_won,
+  elo,
+  country,
+  highlight,
+  showCountry,
+}) {
   const flagUrl = useFlagUrl(country);
   return (
     <div className={`leaderboard-row ${highlight ? "highlight" : ""}`}>

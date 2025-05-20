@@ -42,9 +42,9 @@ export default function LifeCard({
         className={clsx(
           "font-bubble truncate",
           "text-lg sm:text-xl md:text-2xl leading-none",
-          "max-w-[12ch]"           /* ≈ 12 characters */
+          "max-w-[12ch]"
         )}
-        title={name}               /* full name on hover */
+        title={name}
       >
         {name}
       </span>

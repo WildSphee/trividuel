@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
 
-/**
- * Animated countdown:
- * • Black text & spinner until the last 3 seconds, then turns red.
- * • Spinner is a simple `border-t-transparent` ring that rotates every second.
- */
 export default function CountdownTimer({ seconds }) {
   const [timeLeft, setTimeLeft] = useState(seconds);
 

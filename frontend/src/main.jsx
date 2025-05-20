@@ -8,9 +8,7 @@ import App from "./App";
 import "./styles/index.css";
 
 import { AuthProvider } from "@/contexts/AuthContext";
-import { AudioProvider } from '@/audio/AudioProvider';
-import SoundControlButton from '@/components/SoundControlButton';
-
+import { AudioProvider } from "@/audio/AudioProvider";
 
 const queryClient = new QueryClient();
 

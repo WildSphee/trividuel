@@ -1,15 +1,20 @@
 import UserCard from "@/components/UserCard";
 import StripesBackground from "@/components/backgrounds/StripesBackground";
 
-export default function VSScreen({ payload, myUid, size = "lg", className = "" }) {
+export default function VSScreen({
+  payload,
+  myUid,
+  size = "lg",
+  className = "",
+}) {
   if (!payload?.extra?.players || !payload?.extra?.lifes) return null;
 
   const { players, lifes } = payload.extra;
   const uids = Object.keys(lifes);
   const paired = players.map((p, i) => ({ ...p, uid: uids[i] }));
 
-  const me = paired.find(p => p.uid === myUid) ?? paired[0];
-  const opponent = paired.find(p => p.uid !== myUid) ?? paired[1] ?? null;
+  const me = paired.find((p) => p.uid === myUid) ?? paired[0];
+  const opponent = paired.find((p) => p.uid !== myUid) ?? paired[1] ?? null;
 
   return (
     <div
@@ -35,8 +40,10 @@ export default function VSScreen({ payload, myUid, size = "lg", className = "" }
         />
       </div>
 
-      <div className="z-10 select-none font-block font-extrabold tracking-wider
-        text-4xl sm:text-5xl text-black">
+      <div
+        className="z-10 select-none font-block font-extrabold tracking-wider
+        text-4xl sm:text-5xl text-black"
+      >
         VS
       </div>
 

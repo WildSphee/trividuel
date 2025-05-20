@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getMatchSocket, clearMatchSocket } from "@/api/ws";
 
-
 export default function useMatchmaking(onGameStart) {
   const socketRef = useRef(null);
-  const [status, setStatus] = useState("idle");            // idle | queueing | playing
+  const [status, setStatus] = useState("idle"); // idle | queueing | playing
   const navigate = useNavigate();
 
   const queue = async () => {
@@ -46,9 +45,9 @@ export default function useMatchmaking(onGameStart) {
               return;
             }
             break;
-
           }
-          case "zombie": break;
+          case "zombie":
+            break;
 
           default:
             console.log("WS →", data);
@@ -63,7 +62,7 @@ export default function useMatchmaking(onGameStart) {
 
       ws.onclose = () => {
         setStatus("idle");
-      }
+      };
     } catch (err) {
       console.error(err);
       toast.error("Server down. Try again later");

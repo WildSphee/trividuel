@@ -36,7 +36,9 @@ export default function Login() {
           <button
             className="pixel-start-button font-block w-full sm:w-auto px-6 py-3 rounded-md shadow-md bg-blue-600 text-white hover:bg-blue-700 transition"
             onClick={() =>
-              loginGoogle().then(() => navigate("/game")).catch(console.error)
+              loginGoogle()
+                .then(() => navigate("/game"))
+                .catch(console.error)
             }
           >
             Sign in with Google
@@ -45,7 +47,9 @@ export default function Login() {
           <button
             className="pixel-start-button font-block w-full sm:w-auto px-6 py-3 rounded-md shadow-md bg-gray-800 text-white hover:bg-gray-900 transition"
             onClick={() =>
-              loginGithub().then(() => navigate("/game")).catch(console.error)
+              loginGithub()
+                .then(() => navigate("/game"))
+                .catch(console.error)
             }
           >
             Sign in with GitHub

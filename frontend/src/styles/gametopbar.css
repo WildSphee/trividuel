@@ -4,12 +4,12 @@
   box-shadow: -2px 2px 0 #000, -5px 5px 0 #000;
   border-radius: 0;
   background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
-  padding: 0.5rem 0.75rem; 
+  padding: 0.5rem 0.75rem;
   width: 100%;
 }
 
 @media (min-width: 641px) {
   .pixel-top-bar {
-    padding: 0.75rem 2rem;       /* desktop */
+    padding: 0.75rem 2rem; /* desktop */
   }
 }

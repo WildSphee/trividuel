@@ -1,8 +1,3 @@
 export default function GridBackground() {
-  return (
-    <div
-      className={`space-grid-bg`}
-      aria-hidden="true"
-    />
-  );
+  return <div className={`space-grid-bg`} aria-hidden="true" />;
 }

@@ -1,26 +1,5 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 
-/**
- * PixelSkyBackground ─ single-render, GPU-only animation.
- *
- * Props
- *  -------
- *  items         Array<{ src: string; count?: number }>
- *  minDuration   Seconds (shorter ⇒ faster)
- *  maxDuration   Seconds (longer  ⇒ slower)
- *  monochrome    true ⇒ grayscale
- *  opacity       0-1 transparency so layers can overlap
- *  scaleRange    [min, max] – scale multipliers
- *  seed          Any value ⇒ changing it forces a full re-randomise
- *  bgClass       Tailwind class for background colour (default: 'bg-sky-200')
- *
- * Why **useRef** instead of **useMemo**?
- * -------------------------------------
- * Parent re-renders used to create a new `items` array on every click, making
- * `useMemo` recompute.  By storing the generated layers in a ref, we guarantee
- * that sprites are only generated **once per mount**.  Pass a new `seed` prop
- * if you ever need to intentionally reshuffle the sky.
- */
 const PixelSkyBackground = ({
   items = [],
   minDuration = 30,
@@ -56,9 +35,9 @@ const PixelSkyBackground = ({
 
         frames.push(
           `@keyframes flyAcross-${id} {\n` +
-          `  0%   { transform: translateX(${fromX}) ${baseTransform}; }\n` +
-          `  100% { transform: translateX(${toX})   ${baseTransform}; }\n` +
-          `}`
+            `  0%   { transform: translateX(${fromX}) ${baseTransform}; }\n` +
+            `  100% { transform: translateX(${toX})   ${baseTransform}; }\n` +
+            `}`
         );
 
         return (
@@ -94,7 +73,9 @@ const PixelSkyBackground = ({
   const { layers, keyframesCSS } = generated.current;
 
   return (
-    <div className={`fixed inset-0 -z-10 overflow-hidden ${bgClass}`}> {/* apply background class */}
+    <div className={`fixed inset-0 -z-10 overflow-hidden ${bgClass}`}>
+      {" "}
+      {/* apply background class */}
       <style>{keyframesCSS}</style>
       {layers}
     </div>

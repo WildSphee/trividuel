@@ -17,7 +17,7 @@ export default function Game() {
   const [loading, setLoading] = useState(true);
 
   /* always call your hooks in the same order */
-  const { status, queue } = useMatchmaking(payload => {
+  const { status, queue } = useMatchmaking((payload) => {
     const sid = payload.extra?.session_id;
     if (sid) nav(`/room/${sid}`, { replace: true });
   });
@@ -30,19 +30,22 @@ export default function Game() {
         const data = await getMe();
         if (cancelled) return;
 
-        if (!data) {                 // unauth -> go to login 
+        if (!data) {
+          // unauth -> go to login
           nav("/", { replace: true });
         } else {
-          setMe(data);               // logged in -> store profile
+          setMe(data); // logged in -> store profile
         }
-      } catch (err) {
-        nav("/", { replace: true });  // network / 401
+      } catch {
+        nav("/", { replace: true }); // network / 401
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
 
-    return () => { cancelled = true };
+    return () => {
+      cancelled = true;
+    };
   }, [nav]);
 
   if (loading) return <Loader />;
@@ -57,7 +60,7 @@ export default function Game() {
           { src: "/pixelskybackground/cloud2.png", count: 3 },
           { src: "/pixelskybackground/cloud3.png", count: 3 },
           { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
-          { src: "/pixelskybackground/birds.png", count: 1 }
+          { src: "/pixelskybackground/birds.png", count: 1 },
         ]}
         minDuration={110}
         maxDuration={160}
@@ -76,15 +79,13 @@ export default function Game() {
         className="p-12 sm:p-12 flex flex-col items-center overflow-y-auto"
         style={{
           /* gap collapses from 3 rem → 1 rem between 1000 px and 350 px height */
-          gap: 'clamp(0rem,6vh,3rem)',
+          gap: "clamp(0rem,6vh,3rem)",
           /* below ~550 px height start shrinking everything proportionally */
-          transformOrigin: 'top center',
-          transform: 'scale(min(1, (100vh - 150px)/550))',
+          transformOrigin: "top center",
+          transform: "scale(min(1, (100vh - 150px)/550))",
         }}
       >
-        <h1 className="font-block text-5xl font-semibold mb-5">
-          Game Lobby
-        </h1>
+        <h1 className="font-block text-5xl font-semibold mb-5">Game Lobby</h1>
 
         <UserCard
           name={me.display_name}
@@ -96,9 +97,19 @@ export default function Game() {
           onTypeChanged={async () => setMe(await getMe())}
         />
 
-        {status === "idle" && <StartButton onClick={queue}>Find Opponent</StartButton>}
-        {status === "queueing" && <p className="font-comic italic text-xl text-gray-500">Searching for opponent…</p>}
-        {status === "playing" && <p className="font-comic text-xl text-gray-500">Match found — brain it on!</p>}
+        {status === "idle" && (
+          <StartButton onClick={queue}>Find Opponent</StartButton>
+        )}
+        {status === "queueing" && (
+          <p className="font-comic italic text-xl text-gray-500">
+            Searching for opponent…
+          </p>
+        )}
+        {status === "playing" && (
+          <p className="font-comic text-xl text-gray-500">
+            Match found — brain it on!
+          </p>
+        )}
       </div>
     </>
   );

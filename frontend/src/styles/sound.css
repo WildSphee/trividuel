@@ -1,65 +1,63 @@
 .sound-launch {
-    width: 3rem;
-    height: 3rem;
-    background: #23a1df;
-    border: 3px solid #000;
-    box-shadow: -3px 3px 0 #000, -6px 6px 0 #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform .2s ease, box-shadow .2s ease;
-    cursor: pointer;
+  width: 3rem;
+  height: 3rem;
+  background: #23a1df;
+  border: 3px solid #000;
+  box-shadow: -3px 3px 0 #000, -6px 6px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .sound-launch:hover {
-    background: #1d86bb;
-    transform: translate(-2px, 2px);
-    box-shadow: -4px 4px 0 #000, -7px 7px 0 #000;
-    transform: scale(1.04);
+  background: #1d86bb;
+  transform: translate(-2px, 2px);
+  box-shadow: -4px 4px 0 #000, -7px 7px 0 #000;
+  transform: scale(1.04);
 }
 
 /* ===== Floating panel ===== */
 .sound-panel {
-    position: fixed;
-    width: 11rem;
-    padding: .75rem;
-    background: #fff;
-    border: 3px solid #000;
-    box-shadow: -3px 3px 0 #000;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: .75rem;
-    align-items: center;
-    user-select: none;
+  position: fixed;
+  width: 11rem;
+  padding: 0.75rem;
+  background: #fff;
+  border: 3px solid #000;
+  box-shadow: -3px 3px 0 #000;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.75rem;
+  align-items: center;
+  user-select: none;
 }
 
 @media (max-width: 640px) {
-
-    /* Mobile */
-    .sound-panel {
-        top: 15vh;
-        right: 4vw;
-    }
+  /* Mobile */
+  .sound-panel {
+    top: 15vh;
+    right: 4vw;
+  }
 }
 
 @media (min-width: 641px) {
-
-    /* Desktop */
-    .sound-panel {
-        max-height: calc(100vh - 8rem);
-        top: 9rem;
-        right: 1.3rem;
-    }
+  /* Desktop */
+  .sound-panel {
+    max-height: calc(100vh - 8rem);
+    top: 9rem;
+    right: 1.3rem;
+  }
 }
 
 .mute-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 /* slider spans the remaining width */
 .volume-slider {
-    width: 100%;
+  width: 100%;
 }

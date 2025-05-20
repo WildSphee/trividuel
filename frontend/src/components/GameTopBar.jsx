@@ -30,10 +30,7 @@ export default function GameTopBar({
       {/* timer */}
       <div className="flex-none flex flex-col items-center">
         {!answered && (
-          <CountdownTimer
-            seconds={questionTimeout}
-            key={questionIndex}
-          />
+          <CountdownTimer seconds={questionTimeout} key={questionIndex} />
         )}
       </div>
 
