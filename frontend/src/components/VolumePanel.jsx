@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { useAudio } from "../audio/AudioProvider";
+import { useAudio } from "@/audio/AudioProvider";
 
 export default function VolumePanel() {
   const { volume, setVolume } = useAudio();

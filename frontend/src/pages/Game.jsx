@@ -7,7 +7,7 @@ import Loader from "@/components/Loader";
 import StartButton from "@/components/StartButton";
 import PixelSkyBackground from "@/components/backgrounds/PixelSkyBackground";
 import LeaderboardPanel from "@/components/LeaderboardPanel";
-import SoundControlButton from "../components/SoundControlButton";
+import SoundControlButton from "@/components/SoundControlButton";
 
 export default function Game() {
   const nav = useNavigate();

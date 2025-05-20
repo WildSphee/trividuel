@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { RotateCcw } from "lucide-react";
-import { changeType } from "../api/player";
+import { changeType } from "@/api/player";
 
 /**
  * UserCard component

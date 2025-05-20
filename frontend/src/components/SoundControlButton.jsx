@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import VolumePanel from "./VolumePanel";
-import { useAudio } from "../audio/AudioProvider";
+import { useAudio } from "@/audio/AudioProvider";
 
 export default function SoundControlButton() {
   const [open, setOpen] = useState(false);
