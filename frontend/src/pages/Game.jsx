@@ -72,7 +72,16 @@ export default function Game() {
         <SoundControlButton />
       </div>
 
-      <div className="p-12 flex flex-col items-center gap-12">
+      <div
+        className="p-12 sm:p-12 flex flex-col items-center overflow-y-auto"
+        style={{
+          /* gap collapses from 3 rem → 1 rem between 1000 px and 350 px height */
+          gap: 'clamp(0rem,6vh,3rem)',
+          /* below ~550 px height start shrinking everything proportionally */
+          transformOrigin: 'top center',
+          transform: 'scale(min(1, (100vh - 150px)/550))',
+        }}
+      >
         <h1 className="font-block text-5xl font-semibold mb-5">
           Game Lobby
         </h1>

@@ -154,14 +154,25 @@ export default function GameRoom() {
   // during game
   return (
     <>
+      {/* BACKGROUND */}
       <GridBackground />
-      <div className="flex flex-col min-h-screen p-4 sm:p-6 text-center">
-        {flash && (
-          <FlashPulse
-            {...flash}
-            onDone={() => setFlash(null)}
-          />
-        )}
+
+      {/* FLASH FOR CORRECT / WRONG ANSWERS */}
+      {flash && (
+        <FlashPulse
+          {...flash}
+          onDone={() => setFlash(null)}
+        />
+      )}
+
+      <div
+        className="flex flex-col min-h-screen p-4 sm:p-6 text-center overflow-y-auto"
+        style={{
+          gap: 'clamp(0.75rem,4vh,1.5rem)',
+          transformOrigin: 'top center',
+          transform: 'scale(min(1, (100vh - 120px)/520))',
+        }}
+      >
         {/* Names + lifes + timer */}
         <GameTopBar
           myLifeEntry={myLife}
@@ -177,7 +188,7 @@ export default function GameRoom() {
         </h2>
 
         {/* Choice buttons */}
-        <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
+          <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
           {question.choices.map((c, i) => (
             <ChoiceButton
               key={i}
