@@ -59,8 +59,8 @@ export default function Game() {
           { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
           { src: "/pixelskybackground/birds.png", count: 1 }
         ]}
-        minDuration={95}
-        maxDuration={140}
+        minDuration={110}
+        maxDuration={160}
         opacity={0.4}
         scaleRange={[0.3, 0.5]}
         seed={me.uid}

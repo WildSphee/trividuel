@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 
 /**
- * PixelSkyBackground ─ single‑render, GPU‑only animation.
+ * PixelSkyBackground ─ single-render, GPU-only animation.
  *
  * Props
  *  -------
@@ -9,13 +9,14 @@ import React, { useRef } from "react";
  *  minDuration   Seconds (shorter ⇒ faster)
  *  maxDuration   Seconds (longer  ⇒ slower)
  *  monochrome    true ⇒ grayscale
- *  opacity       0‑1 transparency so layers can overlap
+ *  opacity       0-1 transparency so layers can overlap
  *  scaleRange    [min, max] – scale multipliers
- *  seed          Any value ⇒ changing it forces a full re‑randomise
+ *  seed          Any value ⇒ changing it forces a full re-randomise
+ *  bgClass       Tailwind class for background colour (default: 'bg-sky-200')
  *
  * Why **useRef** instead of **useMemo**?
  * -------------------------------------
- * Parent re‑renders used to create a new `items` array on every click, making
+ * Parent re-renders used to create a new `items` array on every click, making
  * `useMemo` recompute.  By storing the generated layers in a ref, we guarantee
  * that sprites are only generated **once per mount**.  Pass a new `seed` prop
  * if you ever need to intentionally reshuffle the sky.
@@ -25,15 +26,15 @@ const PixelSkyBackground = ({
   minDuration = 30,
   maxDuration = 60,
   monochrome = false,
-  opacity = 0.5,
+  opacity = 0.8,
   scaleRange = [0.05, 0.25],
   seed = 0,
+  bgClass = "bg-sky-200",
 }) => {
   const generated = useRef({ seed: null, layers: null, keyframesCSS: "" });
 
   const rng = (min, max) => Math.random() * (max - min) + min;
 
-  // (re)generate only when `seed` changes
   if (generated.current.seed !== seed) {
     let index = 0;
     const frames = [];
@@ -42,7 +43,7 @@ const PixelSkyBackground = ({
       Array.from({ length: item.count || 1 }).map(() => {
         const id = index++;
         const duration = rng(minDuration, maxDuration);
-        const delay = -rng(0, duration); // negative → sprite starts mid‑flight
+        const delay = -rng(0, duration); // negative → sprite starts mid-flight
         const top = rng(10, 90);
         const scale = rng(scaleRange[0], scaleRange[1]);
 
@@ -93,7 +94,7 @@ const PixelSkyBackground = ({
   const { layers, keyframesCSS } = generated.current;
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
+    <div className={`fixed inset-0 -z-10 overflow-hidden ${bgClass}`}> {/* apply background class */}
       <style>{keyframesCSS}</style>
       {layers}
     </div>

@@ -10,8 +10,8 @@ export default function NotFound() {
           { src: "/pixelskybackground/cloud3.png", count: 2 },
           { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
         ]}
-        minDuration={95}
-        maxDuration={140}
+        minDuration={110}
+        maxDuration={160}
         opacity={0.4}
         scaleRange={[0.3, 0.5]}
         seed={12345}
