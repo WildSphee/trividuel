@@ -6,3 +6,12 @@
   height: 100%;
   overflow: hidden;
 } */
+
+/* MAKE IT IMPOSSIBLE TO HIGHLIGHT AND COPY */
+* {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
