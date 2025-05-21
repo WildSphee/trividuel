@@ -8,6 +8,7 @@ import StartButton from "@/components/StartButton";
 import PixelSkyBackground from "@/components/backgrounds/PixelSkyBackground";
 import LeaderboardPanel from "@/components/LeaderboardPanel";
 import SoundControlButton from "@/components/SoundControlButton";
+import DiscordButton from "@/components/DiscordButton";
 
 export default function Game() {
   const nav = useNavigate();
@@ -70,9 +71,13 @@ export default function Game() {
       />
 
       {/* ─── Leaderboard – fixed button (expands internally) ── */}
-      <div className="flex flex-col gap-4 fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
+      <div className="flex flex-col fixed top-3 right-3 sm:top-5 sm:right-5 z-50"
+      style= {{
+        gap: "clamp(0.6rem,1.2vh,4rem)"
+      }}>
         <LeaderboardPanel currentPlayer={me} />
         <SoundControlButton />
+        <DiscordButton />
       </div>
 
       <div
