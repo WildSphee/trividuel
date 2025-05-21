@@ -66,9 +66,9 @@ export default function GameRoom() {
           const ok = extra.answers[me] === extra.correct;
           setFlash({
             color: ok ? "green" : "red",
-            intensity: 0.3,      // 0-1
-            innerGap: 0.3,    // 0 = no gap
-            coverage: 1,      // still usable
+            intensity: 0.3, // 0-1
+            innerGap: 0.3, // 0 = no gap
+            coverage: 1, // still usable
             duration: 700,
           });
           if (ok) {
@@ -94,7 +94,8 @@ export default function GameRoom() {
           break;
         }
 
-        case "zombie": break;
+        case "zombie":
+          break;
 
         default:
           console.log("Unexpected message →", data);
@@ -132,12 +133,9 @@ export default function GameRoom() {
     setAnswered(true);
   }
 
-
   // on game start
   if (!question) {
-    return (
-      <VSScreen payload={data} myUid={auth.currentUser?.uid} />
-    );
+    return <VSScreen payload={data} myUid={auth.currentUser?.uid} />;
   }
   // on game end
   if (endPayload) {
@@ -147,6 +145,8 @@ export default function GameRoom() {
         myUid={me}
         questions={endPayload.questions}
         isWinner={endPayload.winner === me}
+        eloDelta={endPayload.elo_delta}
+        reason={endPayload.reason}
       />
     );
   }
@@ -157,19 +157,14 @@ export default function GameRoom() {
       <GridBackground />
 
       {/* FLASH FOR CORRECT / WRONG ANSWERS */}
-      {flash && (
-        <FlashPulse
-          {...flash}
-          onDone={() => setFlash(null)}
-        />
-      )}
+      {flash && <FlashPulse {...flash} onDone={() => setFlash(null)} />}
 
       <div
         className="flex flex-col min-h-screen p-4 sm:p-6 text-center overflow-y-auto"
         style={{
-          gap: 'clamp(0.75rem,4vh,1.5rem)',
-          transformOrigin: 'top center',
-          transform: 'scale(min(1, (100vh - 120px)/520))',
+          gap: "clamp(0.75rem,4vh,1.5rem)",
+          transformOrigin: "top center",
+          transform: "scale(min(1, (100vh - 120px)/520))",
         }}
       >
         {/* Names + lifes + timer */}
@@ -187,7 +182,7 @@ export default function GameRoom() {
         </h2>
 
         {/* Choice buttons */}
-          <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
+        <div className=" grid w-full gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto animate-fade-pop-quick">
           {question.choices.map((c, i) => (
             <ChoiceButton
               key={i}
@@ -208,5 +203,5 @@ export default function GameRoom() {
         )}
       </div>
     </>
-  )
+  );
 }
