@@ -1,17 +1,10 @@
-/* ZENLOOP */
+/* SLAB */
 
 @font-face {
-  font-family: "ZenLoop";
-  src: url("/fonts/ZenLoop/ZenLoop-Regular.ttf") format("truetype");
+  font-family: "Slab";
+  src: url("/fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-}
-
-@font-face {
-  font-family: "ZenLoop";
-  src: url("/fonts/ZenLoop/ZenLoop-Italic.ttf") format("truetype");
-  font-weight: 400;
-  font-style: italic;
 }
 
 /* BUBBLEGUM */
@@ -55,8 +48,8 @@
   font-style: bold;
 }
 
-.font-zen {
-  font-family: "ZenLoop", sans-serif;
+.font-slab {
+  font-family: "Slab", sans-serif;
 }
 
 .font-bubble {
