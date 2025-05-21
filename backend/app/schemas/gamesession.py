@@ -18,7 +18,7 @@ class GameSession:
     START_GAME_DELAY = 3
     QUESTION_TIMEOUT = 20
     REVEAL_TIME = 3
-    QUESTION_COUNT = 5
+    QUESTION_COUNT = 10
 
     def __init__(self, p1: Player, p2: Player, db: AsyncClient):
         self.id = str(uuid.uuid4())
@@ -89,7 +89,7 @@ class GameSession:
         self.current_index += 1
         if self.current_index >= len(self.questions):
             # out of questions – choose winner by remaining lifes
-            await self._end_game("no_more_questions")
+            await self._end_game("No More Questions")
             return
 
         q = self.questions[self.current_index]
