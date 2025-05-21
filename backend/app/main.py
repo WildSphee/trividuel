@@ -45,24 +45,31 @@ async def zombie_sweeper_loop() -> None:
     a ghost player in queue which blocks them from further playing
     """
     while True:
-        zombies = []
-        for p in player_manager._players.values():
-            try:
-                await p.ws.send_json({"type": "zombie"})
-            except Exception:
-                zombies.append(p)
+        try:
+            zombies = []
+            for p in player_manager._players.values():
+                try:
+                    await p.ws.send_json({"type": "zombie"})
+                except Exception:
+                    zombies.append(p)
 
-        for p in zombies:
-            await match_queue.remove(p)
-            player_manager.remove(p.uid)
+            for p in zombies:
+                await match_queue.remove(p)
+                player_manager.remove(p.uid)
 
-        await asyncio.sleep(settings.ZOMBIE_SWEEPER_INTERVAL)
+            await asyncio.sleep(settings.ZOMBIE_SWEEPER_INTERVAL)
+
+        except Exception:
+            # when players reload sometimes the player queue doesn't
+            # update quick enough and cause dict error,
+            # just ignore to keep the process running
+            continue
 
 
 async def matchmaker_loop() -> None:
     """Background coroutine that continually pairs players."""
     while True:
-        _debug_print()
+        # _debug_print()
         pair = await match_queue.pop_pair()
         if pair:
             p1, p2 = pair
