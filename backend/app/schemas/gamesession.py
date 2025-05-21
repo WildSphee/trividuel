@@ -32,6 +32,10 @@ class GameSession:
         self.db = db
         self.timer_task: Optional[asyncio.Task] = None
 
+        # if a player disconnects the other one will disconnect as well, so we store the first msg
+        # of disconnect to bypass subsequent disconnect messages
+        self.leaver_uid: str = ""
+
     # ------------------------------------------------------------------ utils
     async def _safe_send(self, player: Player, payload: Dict):
         if player.ws.application_state is not WebSocketState.DISCONNECTED:
@@ -149,29 +153,46 @@ class GameSession:
         losers = [p for p in self.players if p.lifes <= 0]
         if losers:
             await asyncio.sleep(self.REVEAL_TIME)
-            await self._end_game("life_zero")
+            await self._end_game("Opponent Ran Out of Lifes")
             return
 
         # else schedule next question
         asyncio.create_task(self._delayed_next_question(self.REVEAL_TIME))
 
     async def handle_disconnect(self, leaver_uid: str):
+        # if this returns true, means we know the leaver already
+        if self.leaver_uid:
+            return
+        self.leaver_uid = leaver_uid
+
+        winner: Player = next(p for p in self.players if p.uid != leaver_uid)
+        loser: Player = next(p for p in self.players if p.uid == leaver_uid)
+
+        winner_new, loser_new, winner_delta, loser_delta = elo_calculation(
+            winner, loser
+        )
+
         await self.broadcast(
             {
                 "type": "game",
                 "message": "end",
                 "extra": {
                     "winner": next(p.uid for p in self.players if p.uid != leaver_uid),
-                    "reason": "opponent_left",
+                    "reason": "Opponent Left",
+                    "elo_delta": (winner_delta, loser_delta),
                     "questions": self.ans_his,
                 },
             }
         )
+
+        await self._record_result(winner, loser, winner_new, loser_new)
+
         await self._cleanup_states()
 
-    async def _record_result(self, winner: Player, loser: Player):
+    async def _record_result(
+        self, winner: Player, loser: Player, winner_new: int, loser_new: int
+    ):
         batch = self.db.batch()
-        winner_new, loser_new = elo_calculation(winner, loser)
 
         # calculate the ELO and set winner and loser respectively
         async def set_elo_and_wins(player, new_elo, win_increment: int = 0):
@@ -195,7 +216,8 @@ class GameSession:
                     "message": "end",
                     "extra": {
                         "winner": None,
-                        "reason": "tie in life",
+                        "reason": "Tie In Lifes",
+                        "elo_delta": (0, 0),
                         "questions": self.ans_his,
                     },
                 }
@@ -206,6 +228,12 @@ class GameSession:
         winner: Player = max(self.players, key=lambda p: (p.lifes))
         loser: Player = next(p for p in self.players if p.uid != winner.uid)
 
+        winner_new, loser_new, winner_delta, loser_delta = elo_calculation(
+            winner, loser
+        )
+
+        await self._record_result(winner, loser, winner_new, loser_new)
+
         await self.broadcast(
             {
                 "type": "game",
@@ -213,11 +241,11 @@ class GameSession:
                 "extra": {
                     "winner": winner.uid,
                     "reason": reason,
+                    "elo_delta": (winner_delta, loser_delta),
                     "questions": self.ans_his,
                 },
             }
         )
-        await self._record_result(winner, loser)
         await self._cleanup_states()
 
     async def _cleanup_states(self):
