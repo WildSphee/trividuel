@@ -42,17 +42,19 @@ def elo_calculation(
     k_los = max(min_k, min(max_k, k_los))
 
     # apply the updates
-    winner_new = max(settings.MIN_ELO, round(winner.elo + k_win * (1.0 - e_win)))
-    loser_new = max(settings.MIN_ELO, round(loser.elo + k_los * (0.0 - e_los)))
+    winner_new: int = max(settings.MIN_ELO, round(winner.elo + k_win * (1.0 - e_win)))
+    loser_new: int = max(settings.MIN_ELO, round(loser.elo + k_los * (0.0 - e_los)))
 
+    winner_delta: int = abs(winner_new - winner.elo)
+    loser_delta: int = abs(loser_new - loser.elo)
     # TODO LOGGING
     print(
         f"{winner.name:>10}: {winner.elo} -> {winner_new}  "
-        f"(K={k_win:.1f},  Δ={winner_new - winner.elo:+})"
+        f"(K={k_win:.1f},  Δ={winner_delta})"
     )
     print(
         f"{loser.name:>10}: {loser.elo} -> {loser_new}   "
-        f"(K={k_los:.1f},  Δ={loser_new - loser.elo:+})"
+        f"(K={k_los:.1f},  Δ={loser_delta})"
     )
 
-    return winner_new, loser_new
+    return winner_new, loser_new, winner_delta, loser_delta

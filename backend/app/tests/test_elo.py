@@ -39,10 +39,12 @@ def test_elo_calculation_output_type():
     p1: Player = make_player(1200)
     p2: Player = make_player(1500)
 
-    winner_new, loser_new = elo_calculation(p1, p2, k=32)
+    winner_new, loser_new, winner_delta, loser_delta = elo_calculation(p1, p2, k=32)
 
     assert isinstance(winner_new, int)
     assert isinstance(loser_new, int)
+    assert isinstance(winner_delta, int)
+    assert isinstance(loser_delta, int)
 
 
 def test_elo_calculation_exact_num():
@@ -50,7 +52,7 @@ def test_elo_calculation_exact_num():
     p1: Player = make_player(1200)
     p2: Player = make_player(1500)
 
-    winner_new, loser_new = elo_calculation(p1, p2, k=32)
+    winner_new, loser_new, *_ = elo_calculation(p1, p2, k=32)
 
     assert winner_new == 1232  # gained 34
     assert loser_new == 1475  # loss 22
@@ -65,10 +67,7 @@ def test_elo_bias():
         p1: Player = make_player(wp)
         p2: Player = make_player(lp)
 
-        winner_new, loser_new = elo_calculation(p1, p2, k=32)
-
-        winner_delta = winner_new - wp
-        loser_delta = lp - loser_new
+        _, _, winner_delta, loser_delta = elo_calculation(p1, p2, k=32)
 
         return winner_delta, loser_delta
 
