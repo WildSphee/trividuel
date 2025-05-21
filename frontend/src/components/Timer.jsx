@@ -24,7 +24,7 @@ export default function CountdownTimer({ seconds }) {
       {/* spinning ring */}
       <div className="absolute inset-0 rounded-full border-4 border-current border-t-transparent animate-spin" />
       {/* number */}
-      <span className="font-comic text-lg">{timeLeft}</span>
+      <span className="font-slab text-lg">{timeLeft}</span>
     </div>
   );
 }

@@ -31,16 +31,16 @@ export default function GameEndScreen({
         {/* ——— left panel ——— */}
         <div className="sm:w-1/3 w-full">
           <div className="pixel-panel p-4 h-full flex flex-col gap-4">
-            <h1 className="font-block text-2xl text-center">
+            <h1 className="font-block text-3xl text-center">
               {isWinner ? "🏆 You Win!" : "Game Over"}
             </h1>
 
             {reason && (
-              <p className="font-bubble text-center text-lg">{reason}</p>
+              <p className="font-comic text-center text-lg">{reason}</p>
             )}
 
             {/* card + elo – row on mobile, column on desktop  */}
-            <div className="flex flex-row sm:flex-col items-center gap-3">
+            <div className="flex flex-row sm:flex-col items-center gap-8">
               <UserCard
                 name={me.name}
                 elo={me.elo}

@@ -21,7 +21,7 @@ export default function EloDelta({ delta }) {
   const sign = delta > 0 ? "+" : "-";
   return (
     <span
-      className={`font-slab elo-text ${
+      className={`font-slab animate-fade-pop-delay-1 elo-text ${
         delta > 0 ? "elo-positive-text" : "elo-negative-text"
       }`}
     >
