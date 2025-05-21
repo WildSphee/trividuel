@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-
-function useCountUp(target, dur = 1000) {
+function useCountUp(target, dur = 2000) {
   const [v, setV] = useState(0);
   useEffect(() => {
     let id;
@@ -22,7 +21,7 @@ export default function EloDelta({ delta }) {
   const sign = delta > 0 ? "+" : "-";
   return (
     <span
-      className={`elo-text ${
+      className={`font-slab elo-text ${
         delta > 0 ? "elo-positive-text" : "elo-negative-text"
       }`}
     >
