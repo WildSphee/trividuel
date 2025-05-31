@@ -159,6 +159,127 @@ We encourage datasets rich with knowledge diversity and explores in science, mat
 
 The dataset should not be limited to one specific culture and domain.
 
-# Contribution
+# Deployment Learning
+documentation of the deployment playbook <br>
+**Ubuntu 22.04 + Nginx + Let’s Encrypt + FastAPI + React**
+
+## 0 Sanity-check
+
+| Item | Value |
+|------|-------|
+| Public IP | **xxx.xxx.xxx.xx** |
+| Domains | **trividuel.io**, **www.trividuel.io** |
+| Front-end | React / Vite dev server on **5173** *or* static **dist/** |
+| Back-end | FastAPI on **5678** |
+
+## 1 Build & Deploy the Front-end
+
+1. SSH into the VM.
+2. Inside the React repo run  
+   ```bash  
+   npm run build  
+   sudo mkdir -p /var/www/trividuel.io  
+   sudo rsync -av dist/ /var/www/trividuel.io/  
+   ```
+
+## 2 Install Nginx & Open Ports
+
+```bash
+sudo apt update && sudo apt install nginx -y
+sudo ufw allow 'OpenSSH'
+sudo ufw allow 'Nginx Full'     # 80 & 443
+sudo ufw enable
+```
+
+## 3 Issue TLS Certificates
+
+```bash
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+# One-liner (–nginx plugin auto-edits vhost and sets up renewals)
+sudo certbot --nginx -d trividuel.io -d www.trividuel.io
+```
+
+Choose **redirect** when prompted so HTTP auto-forwards to HTTPS.  
+Certs live in */etc/letsencrypt/live/trividuel.io/*; renewals run twice a day via systemd-timer.
+
+## 4 Create the Nginx Server Block
+
+```bash
+sudo nano /etc/nginx/sites-available/trividuel.io.conf
+```
+whole scripts below:
+```py
+# /etc/nginx/sites-available/trividuel.io.conf
+server {
+    listen 80;
+    listen [::]:80;
+    server_name trividuel.io www.trividuel.io;
+
+    # Safety net if certbot fails temporarily
+    location /.well-known/acme-challenge/ { root /var/www/html; }
+
+    # Redirect everything to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name trividuel.io www.trividuel.io;
+
+    # --- SSL bits auto-managed by Certbot ---
+    ssl_certificate /etc/letsencrypt/live/trividuel.io/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/trividuel.io/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # HSTS (adds one more layer of security)
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # --------------  FRONT-END  --------------
+    root /var/www/trividuel.io;
+    index index.html;
+
+    # Try static first, then fall back to SPA entry point
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # --------------  BACK-END  --------------
+    # Assumes your API listens on 127.0.0.1:5678
+    location /api/ {
+        proxy_pass         http://127.0.0.1:5678/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    # Optional: WebSocket support (if your API uses it)
+    location /ws/ {
+        proxy_pass http://127.0.0.1:5678/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # Gzip for static assets
+    gzip on;
+    gzip_types text/css application/javascript image/svg+xml;
+}
+```
+
+## 5 Deploying / Redeploying
+
+Step 1 has already shown how to deploy the frontend.<br>
+In case of any frontend changes, and you want to redeploy it, do this:<br> `sudo rsync -av --delete dist/ /var/www/trividuel.io/`<br>
+
+for backend you will have to use either systemd to keep it running or for my case tmux. Cause I'm lazy
+
+
+# Contribution and Distribution
 
 request Reagan Chan <rrr.chanhiulok@gmail.com> for more info
