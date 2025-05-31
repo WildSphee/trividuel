@@ -15,7 +15,7 @@ export async function getMatchSocket() {
   const token = await auth.currentUser?.getIdToken();
   if (!token) throw new Error("Auth token not ready");
 
-  const socket = new WebSocket(`ws://23.98.93.88:5678/play?token=${token}`);
+  const socket = new WebSocket(import.meta.env.VITE_BACKEND_IP + `/play?token=${token}`);
 
   socket.sendJson = (obj) => {
     const msg = JSON.stringify(obj);
