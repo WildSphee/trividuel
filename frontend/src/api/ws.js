@@ -16,7 +16,7 @@ export async function getMatchSocket() {
   if (!token) throw new Error("Auth token not ready");
 
   const socket = new WebSocket(
-    import.meta.env.VITE_BACKEND_WS + `/plasay?token=${token}`
+    import.meta.env.VITE_BACKEND_WS + `/play?token=${token}`
   );
 
   socket.sendJson = (obj) => {
