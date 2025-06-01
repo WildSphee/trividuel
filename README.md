@@ -275,9 +275,20 @@ server {
 ## 5 Deploying / Redeploying
 
 Step 1 has already shown how to deploy the frontend.<br>
-In case of any frontend changes, and you want to redeploy it, do this:<br> `sudo rsync -av --delete dist/ /var/www/trividuel.io/`<br>
+In case of any frontend changes, and you want to redeploy it, do this:<br> 
+`sudo rsync -av --delete dist/ /var/www/trividuel.io/`<br>
 
 for backend you will have to use either systemd to keep it running or for my case tmux. Cause I'm lazy
+
+## 6 Deployment Scalability and Speed - Learnings
+
+To optimize speed, remember for backend must serve without hot reload - minimize CPU usage
+Backend utilize LRU for static unchanging data, like leadership scores. this also prevents multiple unnecessary expensive fetches to the DB. In the future, I could have planned the DB connection and usage more carefully, especially right now every login we fetch from the DB at least once. everytime the user changes the avatar - every call and socket connection calls the DB once. Which can be expensive. In future perhaps redis would be the answer, cached in mem and periodic sync with DB.
+
+frontend, all images should be webp served via cloudflare CDN. This game its set up already.
+If I were to rebuild this again I would've used flutter hands down. As cross platform is something I didn't consider in the beginning. As games are heavy mobile based. Code wise the game session is quite a mess, a lot of conflicting ideas and implementations. I should've cached every data I received throughout the game, so to reduce the payload side on exchange. The same applies heavily to the backend's GameSession Object. a lot of information I should cache and reuse throughout the game.
+
+Overall I'm very pleased with the results. The server set up, infra, network wise was without hurdles. Frontend is not perfect but still very performant, backend I could've planned better for scalability with different questions and user parsing. But overall this achievement is nothing to be ashamed of.
 
 
 # Contribution and Distribution
