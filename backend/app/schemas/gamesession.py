@@ -153,7 +153,7 @@ class GameSession:
         losers = [p for p in self.players if p.lifes <= 0]
         if losers:
             await asyncio.sleep(self.REVEAL_TIME)
-            await self._end_game("Opponent Ran Out of Lifes")
+            await self._end_game("Ran Out of Lifes")
             return
 
         # else schedule next question
