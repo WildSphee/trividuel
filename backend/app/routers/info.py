@@ -102,3 +102,11 @@ async def get_ingamecount(_=Depends(get_current_user)) -> Dict:
     Count and return the amount of players in game (queueing + playing)
     """
     return {"total": len(player_manager._players)}
+
+
+@router.get("/health")
+async def get_ingamecount() -> Dict:
+    """
+    For Monitoring server health
+    """
+    return {"status": "healthy"}
