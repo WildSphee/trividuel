@@ -5,10 +5,10 @@ export default function NotFound() {
     <>
       <PixelSkyBackground
         items={[
-          { src: "/pixelskybackground/cloud1.png", count: 2 },
-          { src: "/pixelskybackground/cloud2.png", count: 2 },
-          { src: "/pixelskybackground/cloud3.png", count: 2 },
-          { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
+          { src: "/pixelskybackground/cloud1.webp", count: 2 },
+          { src: "/pixelskybackground/cloud2.webp", count: 2 },
+          { src: "/pixelskybackground/cloud3.webp", count: 2 },
+          { src: "/pixelskybackground/hot_air_balloon.webp", count: 1 },
         ]}
         minDuration={110}
         maxDuration={160}
@@ -20,7 +20,7 @@ export default function NotFound() {
         {/* Card */}
         <div className="bg-white usercard w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 text-center rounded-lg shadow-md">
           <img
-            src="notfound.png"
+            src="notfound.webp"
             alt="Not-found illustration"
             className="mx-auto mb-6 w-24 sm:w-32 md:w-36"
           />

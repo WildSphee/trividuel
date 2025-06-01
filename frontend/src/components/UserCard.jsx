@@ -85,7 +85,7 @@ export default function UserCard({
     >
       {/* Player Pic */}
       <img
-        src={`/${type}.png`}
+        src={`/${type}.webp`}
         alt="avatar"
         className={`${sizeClasses.img} grid mb-4 object-cover ${
           flipAvatar ? "transform -scale-x-100" : ""

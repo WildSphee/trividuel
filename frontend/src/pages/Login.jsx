@@ -17,10 +17,10 @@ export default function Login() {
     <>
       <PixelSkyBackground
         items={[
-          { src: "/pixelskybackground/cloud1.png", count: 2 },
-          { src: "/pixelskybackground/cloud2.png", count: 2 },
-          { src: "/pixelskybackground/cloud3.png", count: 2 },
-          { src: "/pixelskybackground/hot_air_balloon.png", count: 1 },
+          { src: "/pixelskybackground/cloud1.webp", count: 2 },
+          { src: "/pixelskybackground/cloud2.webp", count: 2 },
+          { src: "/pixelskybackground/cloud3.webp", count: 2 },
+          { src: "/pixelskybackground/hot_air_balloon.webp", count: 1 },
         ]}
         minDuration={95}
         maxDuration={140}
@@ -29,7 +29,7 @@ export default function Login() {
         seed={12345}
       />
       <div className="z-10 flex flex-col items-center justify-center min-h-screen px-4">
-        <img src="/titlescreen.png" className="w-11/12 max-w-lg mb-8" />
+        <img src="/titlescreen.webp" className="w-11/12 max-w-lg mb-8" />
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none justify-center items-center mx-auto">
