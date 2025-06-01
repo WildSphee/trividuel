@@ -105,7 +105,7 @@ async def get_ingamecount(_=Depends(get_current_user)) -> Dict:
 
 
 @router.get("/health")
-async def get_ingamecount() -> Dict:
+async def get_health() -> Dict:
     """
     For Monitoring server health
     """
