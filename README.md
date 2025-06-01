@@ -7,8 +7,8 @@ trivia dueling webgame on a 1v1 setting. Python fastapi backend and React.js fro
 
 Private repository as of now.
 
-![Game screenshot](./assets/images/game_screenshot.png)
-![VS Screen screenshot](./assets/images/vsscreen.png)
+![login screen screenshot](./assets/images/doc_login_screen.png)
+![UI screenshot](./assets/images/doc_ui_screenshot.png)
 
 # Backend 
 
